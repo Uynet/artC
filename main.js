@@ -12,12 +12,17 @@ export default class Main{
 
       //
       const vertex = [
-        0.0, 0.5,
-        0.5, 0.0,
-        -0.5, 0.0
+        0.0,  1.0,  0.0,
+        1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        0.0, -1.0,  0.0
       ];
       //
-
+      const index = [
+        0,1,2,
+        1,2,3,
+      ];
+      const ibo = this.CreateIBO(index);
       const vertexPositionBuffer = this.CreateVBO(vertex);
       const program = gl.createProgram();
       this.CreateShader("main.vert").then(vs=>{
@@ -32,9 +37,11 @@ export default class Main{
         gl.useProgram(program);
 
         let attributeLocation = gl.getAttribLocation(program,"position");
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+        //gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
         gl.enableVertexAttribArray(attributeLocation);
-        gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0)
+        gl.enable(gl.DEPTH_TEST);
+        gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0)
         res();
       });
     });
@@ -45,6 +52,12 @@ export default class Main{
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex), gl.STATIC_DRAW);
     return vbo;
   }
+static CreateIBO(data){
+    const ibo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), gl.STATIC_DRAW);
+    return ibo;
+}
   static CreateShader(path){
     return new Promise(res=>{ let ext = path.split(".")[1];
       let type;
@@ -73,9 +86,10 @@ export default class Main{
   static Render(){
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.drawArrays(gl.TRIANGLES,0,3);
+    //gl.drawArrays(gl.TRIANGLES,0,3);
+    gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT, 0);
     gl.flush();
-//    requestAnimationFrame(Main.Render);
+//  requestAnimationFrame(Main.Render);
   }
 }
 
