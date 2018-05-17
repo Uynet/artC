@@ -1,4 +1,6 @@
+import VertexBuffer from "./vertexBuffer.js";
 let gl,canvas;
+
 export default class Main{
   static Init(){
     this.Boot().then(Main.Render);
@@ -9,6 +11,7 @@ export default class Main{
       canvas.width = 800;
       canvas.height = 800;
       gl = canvas.getContext("webgl");
+      this.gl = gl;
 
       //
       const vertex = [
@@ -23,7 +26,8 @@ export default class Main{
         1,2,3,
       ];
       const ibo = this.CreateIBO(index);
-      const vertexPositionBuffer = this.CreateVBO(vertex);
+      const vertexPositionBuffer = new VertexBuffer();
+      vertexPositionBuffer.Create(vertex);
       const program = gl.createProgram();
       this.CreateShader("main.vert").then(vs=>{
         gl.attachShader(program,vs);
@@ -37,7 +41,7 @@ export default class Main{
         gl.useProgram(program);
 
         let attributeLocation = gl.getAttribLocation(program,"position");
-        //gl.bindBuffer(gl.ARRAY_BUFFER, vertexPositionBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER,vertexPositionBuffer.id);
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
         gl.enableVertexAttribArray(attributeLocation);
         gl.enable(gl.DEPTH_TEST);
@@ -45,12 +49,6 @@ export default class Main{
         res();
       });
     });
-  }
-  static CreateVBO(vertex){
-    const vbo = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertex), gl.STATIC_DRAW);
-    return vbo;
   }
 static CreateIBO(data){
     const ibo = gl.createBuffer();
