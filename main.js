@@ -1,8 +1,10 @@
 import VertexBuffer from "./vertexBuffer.js";
-let gl,canvas;
+let gl,canvas,program,timer;
+let index;
 
 export default class Main{
   static Init(){
+    timer = 0;
     this.Boot().then(Main.Render);
   }
   static Boot(){
@@ -13,22 +15,28 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
 
-      //
-      const vertex = [
-        0.0,  1.0,  0.0,
-        1.0,  0.0,  0.0,
-        -1.0,  0.0,  0.0,
-        0.0, -1.0,  0.0
+      let rad = 0.3;
+      const position = [
+        0,0,0,
+        rad,0,0,
       ];
-      //
-      const index = [
-        0,1,2,
-        1,2,3,
-      ];
+      index = [];
+      let arg = 0;
+
+      for(let i=0;i<10;i++){
+        arg += Math.PI/5;
+        position.push(rad * cos(arg));
+        position.push(rad * sin(arg));
+        position.push(0);
+        index.push(0);
+        index.push(i+1);
+        index.push(i+2);
+      }
+
       const ibo = this.CreateIBO(index);
       const vertexPositionBuffer = new VertexBuffer();
-      vertexPositionBuffer.Create(vertex);
-      const program = gl.createProgram();
+      vertexPositionBuffer.Create(position);
+      program = gl.createProgram();
       this.CreateShader("main.vert").then(vs=>{
         gl.attachShader(program,vs);
         return this.CreateShader("main.frag");
@@ -84,10 +92,18 @@ static CreateIBO(data){
   static Render(){
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    //gl.drawArrays(gl.TRIANGLES,0,3);
-    gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT, 0);
+    const vi = gl.getUniformLocation(program, "viewMatrix");
+    const viewMatrix = [
+      cos(timer/100),-sin(timer/100),0,0,
+      sin(timer/100),cos(timer/100),0,0,
+      0,0,1,0,
+      0,0,0,timer/100,
+    ];
+    gl.uniformMatrix4fv(vi,false,viewMatrix);
+    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT, 0);
     gl.flush();
-//  requestAnimationFrame(Main.Render);
+    requestAnimationFrame(Main.Render);
+    timer++;
   }
 }
 

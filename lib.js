@@ -47,3 +47,5 @@ const nomalize = (v)=>{
     y : v.y/d,
   }
 }
+const cos = Math.cos;
+const sin = Math.sin;
