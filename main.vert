@@ -1,6 +1,10 @@
-attribute vec2 position;
+attribute vec4 color;
+attribute vec3 position;
+varying vec4 vColor;
 uniform mat4 viewMatrix;
 
 void main(){
-   gl_Position = viewMatrix * vec4(position,0.,1.);
+  vColor = color;
+  vec4 a = vec4(position,1.0);
+  gl_Position = a;
 }

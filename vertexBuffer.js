@@ -8,6 +8,5 @@ export default class VertexBuffer{
     const gl = Main.gl;
     gl.bindBuffer(gl.ARRAY_BUFFER,this.id); //本当は違うけどめんどいからこう書く
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
-    gl.bindBuffer(gl.ARRAY_BUFFER,null);
   }
 }

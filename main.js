@@ -17,18 +17,27 @@ export default class Main{
       this.gl = gl;
 
       let rad = 0.3;
+      let z = 0.00;
       const position = [
-        0,0,2,
-        rad,0,2,
+        0,0,z,
+        rad,0,z,
+      ];
+      const color = [
+        1,0,0,1,
+        0,1,0,1,
+        0,0,1,1,
+        1,1,0,1,
+        0,1,1,1,
+        1,0,1,1,
       ];
       index = [];
       let arg = 0;
 
-      for(let i=0;i<10;i++){
-        arg += Math.PI/5;
+      for(let i=0;i<4;i++){
+        arg += Math.PI/2;
         position.push(rad * cos(arg));
         position.push(rad * sin(arg));
-        position.push(2);
+        position.push(z);
         index.push(0);
         index.push(i+1);
         index.push(i+2);
@@ -36,7 +45,10 @@ export default class Main{
 
       const ibo = this.CreateIBO(index);
       const vertexPositionBuffer = new VertexBuffer();
+      const colorBuffer = new VertexBuffer();
       vertexPositionBuffer.Create(position);
+      colorBuffer.Create(color);
+
       program = gl.createProgram();
       this.CreateShader("main.vert").then(vs=>{
         gl.attachShader(program,vs);
@@ -48,13 +60,18 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program))
         }
         gl.useProgram(program);
-
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+        //color
+        let colorLocation = gl.getAttribLocation(program,"color");
+        gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer.id);
+        gl.enableVertexAttribArray(colorLocation);
+        gl.vertexAttribPointer(colorLocation,4,gl.FLOAT,false,0,0)
+        //pos
         let attributeLocation = gl.getAttribLocation(program,"position");
         gl.bindBuffer(gl.ARRAY_BUFFER,vertexPositionBuffer.id);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
         gl.enableVertexAttribArray(attributeLocation);
-        gl.enable(gl.DEPTH_TEST);
-        gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0)
+        gl.vertexAttribPointer(attributeLocation,3,gl.FLOAT,false,0,0)
+
         res();
       });
     });
@@ -65,40 +82,40 @@ static CreateIBO(data){
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Int16Array(data), gl.STATIC_DRAW);
     return ibo;
 }
-  static CreateShader(path){
-    return new Promise(res=>{ let ext = path.split(".")[1];
-      let type;
-      switch(ext){
-        case "vert" : type = gl.VERTEX_SHADER;break;
-        case "frag" : type = gl.FRAGMENT_SHADER;break;
-      }
-      const shader = gl.createShader(type);
-      let xhr = new XMLHttpRequest();
-      xhr.open("GET",path,true);
-      xhr.addEventListener("load",event=>{
-        let code = xhr.responseText;
-        gl.shaderSource(shader,code);
-        gl.compileShader(shader);
-        if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-          res(shader);
-        } else {
-          console.error(gl.getShaderInfoLog(shader));
-        }
+static CreateShader(path){
+  return new Promise(res=>{ let ext = path.split(".")[1];
+    let type;
+    switch(ext){
+      case "vert" : type = gl.VERTEX_SHADER;break;
+      case "frag" : type = gl.FRAGMENT_SHADER;break;
+    }
+    const shader = gl.createShader(type);
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET",path,true);
+    xhr.addEventListener("load",event=>{
+      let code = xhr.responseText;
+      gl.shaderSource(shader,code);
+      gl.compileShader(shader);
+      if (gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         res(shader);
-      });
-
-      xhr.send(null);
+      } else {
+        console.error(gl.getShaderInfoLog(shader));
+      }
+      res(shader);
     });
-  }
-  static Po(){
-    let rot1 = [
-      cos(timer/100),0,-sin(timer/100),0,
-      0,1,0,0,
-      sin(timer/100),0,cos(timer/100),0,
-      0,0,0,1,
-    ];
-    let e = [
-      1,0,0,0,
+
+    xhr.send(null);
+  });
+}
+static Po(){
+  let rot1 = [
+    cos(timer/100),0,-sin(timer/100),0,
+    0,1,0,0,
+    sin(timer/100),0,cos(timer/100),0,
+    0,0,0,1,
+  ];
+  let e = [
+    1,0,0,0,
       0,1,0,0,
       0,0,1,0,
       0,0,0,1,
@@ -112,7 +129,7 @@ static CreateIBO(data){
     Main.Po();
     const vi = gl.getUniformLocation(program, "viewMatrix");
     gl.uniformMatrix4fv(vi,false,Main.viewMatrix);
-    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0);
     gl.flush();
     requestAnimationFrame(Main.Render);
     timer+=1;
