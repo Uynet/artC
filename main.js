@@ -5,6 +5,7 @@ let index;
 export default class Main{
   static Init(){
     timer = 0;
+    this.Po();
     this.Boot().then(Main.Render);
   }
   static Boot(){
@@ -17,8 +18,8 @@ export default class Main{
 
       let rad = 0.3;
       const position = [
-        0,0,0,
-        rad,0,0,
+        0,0,2,
+        rad,0,2,
       ];
       index = [];
       let arg = 0;
@@ -27,7 +28,7 @@ export default class Main{
         arg += Math.PI/5;
         position.push(rad * cos(arg));
         position.push(rad * sin(arg));
-        position.push(0);
+        position.push(2);
         index.push(0);
         index.push(i+1);
         index.push(i+2);
@@ -89,21 +90,32 @@ static CreateIBO(data){
       xhr.send(null);
     });
   }
+  static Po(){
+    let rot1 = [
+      cos(timer/100),0,-sin(timer/100),0,
+      0,1,0,0,
+      sin(timer/100),0,cos(timer/100),0,
+      0,0,0,1,
+    ];
+    let e = [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      0,0,0,1,
+    ];
+
+    Main.viewMatrix = multMatrix(rot1,e);
+  }
   static Render(){
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    Main.Po();
     const vi = gl.getUniformLocation(program, "viewMatrix");
-    const viewMatrix = [
-      cos(timer/100),-sin(timer/100),0,0,
-      sin(timer/100),cos(timer/100),0,0,
-      0,0,1,0,
-      0,0,0,timer/100,
-    ];
-    gl.uniformMatrix4fv(vi,false,viewMatrix);
+    gl.uniformMatrix4fv(vi,false,Main.viewMatrix);
     gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT, 0);
     gl.flush();
     requestAnimationFrame(Main.Render);
-    timer++;
+    timer+=1;
   }
 }
 

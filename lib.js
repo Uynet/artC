@@ -47,5 +47,15 @@ const nomalize = (v)=>{
     y : v.y/d,
   }
 }
+//4次元のみ　
+const multMatrix = (m1,m2)=>{
+  let m = new Array(16).fill(0);
+  for(let y=0;y<4;y++){
+    for(let x=0;x<4;x++){
+      m[4*y+x] += m1[4*y+x]*m2[4*y+x]; 
+    }
+  }
+  return m;
+}
 const cos = Math.cos;
 const sin = Math.sin;
