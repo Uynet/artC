@@ -2,24 +2,46 @@ import VertexBuffer from "./vertexBuffer.js";
 import IndexBuffer from "./indexBuffer.js";
 import Cube from "./cube.js";
 import Shader from "./shader.js";
+import Matrix from "./matrix.js";
 
-let gl,canvas,program,timer;
+let gl,canvas,program;
 let index;
 
 export default class Main{
   static Init(){
-    timer = 0;
-    this.Po();
     this.Boot().then(Main.Render);
+  }
+  static Render(){
+    gl.clearColor(0,0,0,1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    Matrix.Update();
+    Main.SendUniform();
+
+    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0);
+    gl.flush();
+
+    Main.timer+=1;
+    requestAnimationFrame(Main.Render);
   }
   static Boot(){
     return new Promise(res=>{
+      this.timer = 0;
       canvas = document.getElementById("po");
       canvas.width = 800;
       canvas.height = 800;
       gl = canvas.getContext("webgl");
       this.gl = gl;
-
+      this.camera = {
+        pos : vec3(0,0,-1.00),//座標
+        forward : vec3(0,0,-1),//カメラの向き
+        up : vec3(0,1,0),//カメラの上方向
+      }
+      this.SetShader().then(res);
+    });
+  }
+  static SetShader(){
+    return new Promise(res=>{
       const cube = new Cube(0,0,0.20);
       const position = cube.position;
       const color = cube.color;
@@ -40,67 +62,25 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program))
         }
         gl.useProgram(program);
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo.id);
-        //color
-        let colorLocation = gl.getAttribLocation(program,"color");
-        gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer.id);
-        gl.enableVertexAttribArray(colorLocation);
         gl.enable(gl.DEPTH_TEST);
-        gl.vertexAttribPointer(colorLocation,4,gl.FLOAT,false,0,0)
-        //pos
-        let attributeLocation = gl.getAttribLocation(program,"position");
-        gl.bindBuffer(gl.ARRAY_BUFFER,vertexPositionBuffer.id);
-        gl.enableVertexAttribArray(attributeLocation);
-        gl.vertexAttribPointer(attributeLocation,3,gl.FLOAT,false,0,0)
+        this.SetAttribute("color",4,colorBuffer.id);
+        this.SetAttribute("position",3,vertexPositionBuffer.id);
 
         res();
       });
-    });
+    })
   }
-static Po(){
-  let rot1 = [
-    cos(timer/30),0,-sin(timer/30),0,
-    0,1,0,0,
-    sin(timer/30),0,cos(timer/30),0,
-    0,0,0,1,
-  ];
-  let e = [
-    cos(timer/20),-sin(timer/20),0,0,
-    sin(timer/20),cos(timer/20),0,0,
-    0,0,1,0,
-    0,0,0,1,
-  ];
-  let e2 = [
-    1,0,0,0,
-    0,cos(timer/15),-sin(timer/15),0,
-    0,sin(timer/15),cos(timer/15),0,
-    0,0,0,1,
-  ];
-  let e3 = [
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,-1,1,
-  ];
-
-  let po = multMatrix(e,e2);
-  Main.rotMatrix = multMatrix(rot1,po);
-  Main.viewMatrix = e3;
+  static SetAttribute(vary,stlide,vbo){
+    let attributeLocation = gl.getAttribLocation(program,vary);
+    gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
+    gl.enableVertexAttribArray(attributeLocation);
+    gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
   }
-  static Render(){
-    gl.clearColor(0,0,0,1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    Main.Po();
+  static SendUniform(){
     const vi = gl.getUniformLocation(program, "rotMatrix");
     const vi2 = gl.getUniformLocation(program, "viewMatrix");
-    gl.uniformMatrix4fv(vi,false,Main.rotMatrix);
-    gl.uniformMatrix4fv(vi2,false,Main.viewMatrix);
-
-    gl.drawElements(gl.TRIANGLES,index.length,gl.UNSIGNED_SHORT,0);
-    gl.flush();
-    requestAnimationFrame(Main.Render);
-    timer+=1;
+    gl.uniformMatrix4fv(vi,false,Matrix.rotMatrix);
+    gl.uniformMatrix4fv(vi2,false,Matrix.viewMatrix);
   }
 }
 

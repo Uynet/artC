@@ -11,6 +11,13 @@ const vec2 = (x,y)=>{
     y : y,
   }
 }
+const vec3 = (x,y,z)=>{
+  return {
+    x : x,
+    y : y,
+    z : z,
+  }
+}
 const adv = (v1,v2)=>{
   return {
     x : v1.x+v2.x,
@@ -40,11 +47,12 @@ const lenqth2 = (v)=>{
   return v.x*v.x + v.y*v.y;
 }
 //正規化
-const nomalize = (v)=>{
-  let d = v.x*v.x + v.y*v.y;
+const normalize = (v)=>{
+  let d = v.x*v.x + v.y*v.y + v.z*v.z;
   return {
     x : v.x/d,
     y : v.y/d,
+    z : v.z/d,
   }
 }
 //4次元のみ　
@@ -58,6 +66,20 @@ const multMatrix = (m1,m2)=>{
     }
   }
   return m;
+}
+//外積 3次元のみ
+const cross = (v1,v2)=>{
+  return {
+    x : v1.y*v2.z - v1.z*v2.y,
+    y : v1.z*v2.x - v1.x*v2.z,
+    z : v1.x*v2.y - v1.y*v2.x,
+  }
+}
+const dot = (v1,v2)=>{
+  return v1.x*v2.x+v1.y*v2.y+v1.z*v2.z;
+}
+const rand = (d)=>{
+  return d*(Math.random()-0.5);
 }
 const cos = Math.cos;
 const sin = Math.sin;
