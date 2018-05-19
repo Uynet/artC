@@ -52,7 +52,9 @@ const multMatrix = (m1,m2)=>{
   let m = new Array(16).fill(0);
   for(let y=0;y<4;y++){
     for(let x=0;x<4;x++){
-      m[4*y+x] += m1[4*y+x]*m2[4*y+x]; 
+      for(let i = 0;i<4;i++){
+        m[4*y+x] += m1[4*y+i]*m2[4*i+x]; 
+      }
     }
   }
   return m;

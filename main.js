@@ -16,31 +16,41 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
 
-      let rad = 0.3;
-      let z = 0.00;
-      const position = [
-        0,0,z,
-        rad,0,z,
-      ];
-      const color = [
-        1,0,0,1,
-        0,1,0,1,
-        0,0,1,1,
-        1,1,0,1,
-        0,1,1,1,
-        1,0,1,1,
-      ];
+      let z = 0.20;
+      let rad = z;
       index = [];
       let arg = 0;
 
-      for(let i=0;i<4;i++){
-        arg += Math.PI/2;
-        position.push(rad * cos(arg));
-        position.push(rad * sin(arg));
-        position.push(z);
-        index.push(0);
-        index.push(i+1);
-        index.push(i+2);
+      const position = [
+        0,0,0,
+        z,0,0,
+        0,z,0,
+        z,z,0,
+        0,0,z,
+        z,0,z,
+        0,z,z,
+        z,z,z,
+      ];
+      position.forEach((e,i,a)=>{a[i]-=0.1});
+      index = [
+        0,1,2,1,2,3,
+        4,5,6,5,6,7,
+        0,6,4,0,6,2,
+        1,7,5,1,7,3,
+        0,5,4,0,5,1,
+        2,7,6,2,7,3,
+      ]
+      const color = [];
+      for(let i = 0;i<position.length/3;i++){
+        /*
+        color.push(i%2/2+0.3);
+        color.push(i/16+0.3);
+        color.push(i%4/4+0.1);
+        */
+        color.push(i%2);
+        color.push(i%3/3+0.3);
+        color.push(i%5/5+0.3);
+        color.push(1);
       }
 
       const ibo = this.CreateIBO(index);
@@ -65,6 +75,7 @@ export default class Main{
         let colorLocation = gl.getAttribLocation(program,"color");
         gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer.id);
         gl.enableVertexAttribArray(colorLocation);
+        gl.enable(gl.DEPTH_TEST);
         gl.vertexAttribPointer(colorLocation,4,gl.FLOAT,false,0,0)
         //pos
         let attributeLocation = gl.getAttribLocation(program,"position");
@@ -109,19 +120,27 @@ static CreateShader(path){
 }
 static Po(){
   let rot1 = [
-    cos(timer/100),0,-sin(timer/100),0,
+    cos(timer/30),0,-sin(timer/30),0,
     0,1,0,0,
-    sin(timer/100),0,cos(timer/100),0,
+    sin(timer/30),0,cos(timer/30),0,
     0,0,0,1,
   ];
   let e = [
+    cos(timer/20),-sin(timer/20),0,0,
+    sin(timer/20),cos(timer/20),0,0,
+    0,0,1,0,
+    0,0,0,1,
+  ];
+  let e2 = [
     1,0,0,0,
-      0,1,0,0,
-      0,0,1,0,
-      0,0,0,1,
-    ];
+    0,cos(timer/15),-sin(timer/15),0,
+    0,sin(timer/15),cos(timer/15),0,
+    0,0,0,1,
+  ];
 
-    Main.viewMatrix = multMatrix(rot1,e);
+  let po = multMatrix(e,e2);
+  Main.viewMatrix = multMatrix(rot1,po);
+  //Main.viewMatrix = rot1;
   }
   static Render(){
     gl.clearColor(0,0,0,1);
