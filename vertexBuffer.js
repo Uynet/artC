@@ -1,12 +1,10 @@
 import Main from "./main.js";
 
 export default class VertexBuffer{
-  constructor(){
+  constructor(data){
     this.id = Main.gl.createBuffer();
-  }
-  Create(data) {
     const gl = Main.gl;
-    gl.bindBuffer(gl.ARRAY_BUFFER,this.id); //本当は違うけどめんどいからこう書く
+    gl.bindBuffer(gl.ARRAY_BUFFER,this.id);
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
   }
 }
