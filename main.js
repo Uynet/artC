@@ -9,6 +9,7 @@ let index;
 
 export default class Main{
   static Init(){
+    Matrix.Init();
     this.Boot().then(Main.Render);
   }
   static Render(){
@@ -33,7 +34,7 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-1.00),//座標
+        pos : vec3(0,0,-0.50),//座標
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
@@ -48,13 +49,13 @@ export default class Main{
       gl.activeTexture(gl.TEXTURE0);
       const tex = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
       gl.generateMipmap(gl.TEXTURE_2D);
     };
   }
   static SetShader(){
     return new Promise(res=>{
-      const cube = new Cube(0,0,0.20);
+      const cube = new Cube(0,0,0.13);
       const position = cube.position;
       const color = cube.color;
       index = cube.index;
@@ -77,10 +78,10 @@ export default class Main{
           1.0, 0.0,
           0.0, 1.0,
           1.0, 1.0,
-          0.0, 0.0,
-          1.0, 0.0,
           0.0, 1.0,
           1.0, 1.0,
+          0.0, 0.0,
+          1.0, 0.0,
         ]
         const ibo = new IndexBuffer(index);
         const vertexPositionBuffer = new VertexBuffer(position);
@@ -104,8 +105,12 @@ export default class Main{
   static SendUniform(){
     const vi = gl.getUniformLocation(program, "rotMatrix");
     const vi2 = gl.getUniformLocation(program, "viewMatrix");
+    const vi3 = gl.getUniformLocation(program, "poMatrix");
+    const vi4 = gl.getUniformLocation(program, "projMatrix");
     gl.uniformMatrix4fv(vi,false,Matrix.rotMatrix);
     gl.uniformMatrix4fv(vi2,false,Matrix.viewMatrix);
+    gl.uniformMatrix4fv(vi3,false,Matrix.poMatrix);
+    gl.uniformMatrix4fv(vi4,false,Matrix.projMatrix);
   }
 }
 
