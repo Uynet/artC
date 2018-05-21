@@ -11,6 +11,7 @@ export default class Cube{
       z,z,z,
     ];
     this.position.forEach((e,i,a)=>{a[i]-=z/2});
+    this.normal = this.position;
     this.index = [
       0,1,2,1,2,3,
       4,5,6,5,6,7,

@@ -14,7 +14,6 @@ export default class Matrix{
       0,0,(near+far) / (near-far), -1,
       0,0,2*near*far/(near-far),0.001
     ];
-    cl(this.projMatrix)
   }
   static Size(t){
     let k = t%60;

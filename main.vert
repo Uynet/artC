@@ -1,5 +1,7 @@
-attribute vec4 color; attribute vec3 position;
+attribute vec4 color;
+attribute vec3 position;
 varying vec4 vColor;
+varying vec3 normal;
 uniform mat4 rotMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
@@ -9,6 +11,7 @@ attribute vec2 uv;
 varying vec2 vUV;
 
 void main(){
+  normal = position;
   vUV = uv;
   vColor = color;
   vec4 a = rotMatrix*vec4(position,1.0);

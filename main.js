@@ -3,6 +3,7 @@ import IndexBuffer from "./indexBuffer.js";
 import Cube from "./cube.js";
 import Shader from "./shader.js";
 import Matrix from "./matrix.js";
+import Texture from "./Texture.js";
 
 let gl,canvas,program;
 let index;
@@ -38,27 +39,14 @@ export default class Main{
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
-      this.CreateTexture("fav.png");
+      const texFav = new Texture("fav.png",0);
+      const texSkydome = new Texture("skydome.png",1);
+
       this.SetShader().then(res);
     });
   }
-  static CreateTexture(path){
-    const img = new Image();
-    img.src = path;
-    img.onload = _ => {
-      gl.activeTexture(gl.TEXTURE0);
-      const tex = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
-      gl.generateMipmap(gl.TEXTURE_2D);
-    };
-  }
   static SetShader(){
     return new Promise(res=>{
-      const cube = new Cube(0,0,0.13);
-      const position = cube.position;
-      const color = cube.color;
-      index = cube.index;
 
       program = gl.createProgram();
 
@@ -83,13 +71,17 @@ export default class Main{
           0.0, 0.0,
           1.0, 0.0,
         ]
+
+        const cube = new Cube(0,0,0.13);
+        index = cube.index;
+
         const ibo = new IndexBuffer(index);
-        const vertexPositionBuffer = new VertexBuffer(position);
-        const colorBuffer = new VertexBuffer(color);
+        const positionBuffer = new VertexBuffer(cube.position);
+        const colorBuffer = new VertexBuffer(cube.color);
         const texuvBuffer = new VertexBuffer(texuv);
         this.SetAttribute("uv",2,texuvBuffer.id);
         this.SetAttribute("color",4,colorBuffer.id);
-        this.SetAttribute("position",3,vertexPositionBuffer.id);
+        this.SetAttribute("position",3,positionBuffer.id);
         const texL = gl.getUniformLocation(program,"tex");
         gl.uniform1i(texL, 0);
         res();
