@@ -17,24 +17,18 @@ export default class Main{
     Main.camera.pos.z *= 0.99;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    //BG
-    /*
-    gl.useProgram(sphereProgram.id);
-    sphereProgram.ibo.bind();
-    const vi5 = gl.getUniformLocation(sphereProgram.id, "viewMatrix");
-    const vi6 = gl.getUniformLocation(sphereProgram.id, "projMatrix");
-    gl.uniformMatrix4fv(vi5,false,Matrix.viewMatrix);
-    gl.uniformMatrix4fv(vi6,false,Matrix.projMatrix);
-    gl.drawElements(gl.TRIANGLES,sphereProgram.index.length,gl.UNSIGNED_SHORT,0);
-    */
-
-    //cube
+    //p
     gl.useProgram(program.id);
     Matrix.Update();
     Main.SendUniform();
     program.ibo.bind();
-    gl.drawElements(gl.TRIANGLES,program.index.length,gl.UNSIGNED_SHORT,0);
 
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    gl.drawArrays(gl.TRIANGLE_STRIP,4,4);
+    gl.drawArrays(gl.TRIANGLE_STRIP,8,4);
+    gl.drawArrays(gl.TRIANGLE_STRIP,12,4);
+    gl.drawArrays(gl.TRIANGLE_STRIP,16,4);
+    gl.drawArrays(gl.TRIANGLE_STRIP,20,4);
 
     gl.flush();
 
@@ -50,11 +44,11 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-10.00),//座標
+        pos : vec3(0,0,-4.00),//座標
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
-      const texFav = new Texture("skydome.png",0);
+      const texFav = new Texture("fav.png",0);
       const texSkydome = new Texture("skydome.png",1);
 
       this.SetShader().then(res);
@@ -62,42 +56,6 @@ export default class Main{
   }
   static SetShader(){
     return new Promise(res=>{
-      //Sphere
-      sphereProgram = new Program();
-      Shader.CreateShader("sphere.vert").then(vs=>{
-        gl.attachShader(sphereProgram.id,vs);
-        return Shader.CreateShader("sphere.frag");
-      }).then(fs=>{
-        gl.attachShader(sphereProgram.id,fs);
-        gl.linkProgram(sphereProgram.id);
-        gl.useProgram(sphereProgram.id);
-        if (!gl.getProgramParameter(sphereProgram.id, gl.LINK_STATUS)) {
-          console.log(gl.getProgramInfoLog(spehreProgram.id))
-        }
-        const texuv = [
-          0.0 , 0.0 ,
-          0.0 , 1.0 ,
-          1.0 , 0.0 ,
-          1.0 , 1.0 ,
-        ]
-        const position = [
-          -10.0 , 10.0 ,10.0,
-          10.0 , 10.0 ,10.0,
-          10.0 , -10.0 ,10.0,
-          -10.0 , -10.0 ,10.0,
-        ]
-        const index = [
-          0,1,2,1,2,3
-        ]
-        const ibo = new IndexBuffer(index);
-        const texuvBuffer = new VertexBuffer(texuv);
-        this.SetAttribute(sphereProgram.id,"uv",2,texuvBuffer.id);
-        this.SetAttribute(sphereProgram.id,"position",3,new VertexBuffer(position).id);
-        sphereProgram.index = index;
-        sphereProgram.ibo = ibo;
-
-        gl.uniform1i(gl.getUniformLocation(sphereProgram.id,"skyTex"),1);
-      })
       //Cube
       program = new Program();
       Shader.CreateShader("cube.vert").then(vs=>{
@@ -116,10 +74,8 @@ export default class Main{
 
         const ibo = new IndexBuffer(cube.index);
         const positionBuffer = new VertexBuffer(cube.position);
-        const colorBuffer = new VertexBuffer(cube.color);
         const texuvBuffer = new VertexBuffer(cube.texuv);
         this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
-        this.SetAttribute(program.id,"color",4,colorBuffer.id);
         this.SetAttribute(program.id,"position",3,positionBuffer.id);
 
         program.index = cube.index;
