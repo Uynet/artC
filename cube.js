@@ -20,6 +20,16 @@ export default class Cube{
       0,5,4,0,5,1,
       2,7,6,2,7,3,
     ];
+    this.texuv = [
+      0.0, 0.0,
+      1.0, 0.0,
+      0.0, 1.0,
+      1.0, 1.0,
+      0.0, 1.0,
+      1.0, 1.0,
+      0.0, 0.0,
+      1.0, 0.0,
+    ];
     this.color = [];
     for(let i = 0;i<this.position.length/3;i++){
       this.color.push(i%2);
