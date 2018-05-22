@@ -1,16 +1,21 @@
 export default class Cube{
-  constructor(x,y,z){
+  constructor(x,y,z,e){
     this.position = [
       0,0,0,
-      z,0,0,
-      0,z,0,
-      z,z,0,
-      0,0,z,
-      z,0,z,
-      0,z,z,
-      z,z,z,
+      e,0,0,
+      0,e,0,
+      e,e,0,
+      0,0,e,
+      e,0,e,
+      0,e,e,
+      e,e,e,
     ];
-    this.position.forEach((e,i,a)=>{a[i]-=z/2});
+    this.position.forEach((p,i,a)=>{
+      a[i]-=e/2;
+      if(i%3==0)a[i]+=x;
+      if(i%3==1)a[i]+=y;
+      if(i%3==2)a[i]+=z;
+    });
     this.normal = this.position;
     this.index = [
       0,1,2,1,2,3,

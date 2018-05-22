@@ -14,12 +14,19 @@ export default class Main{
     this.Boot().then(Main.Render);
   }
   static Render(){
+    Main.camera.pos.z *= 0.99;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     //BG
+    /*
     gl.useProgram(sphereProgram.id);
     sphereProgram.ibo.bind();
+    const vi5 = gl.getUniformLocation(sphereProgram.id, "viewMatrix");
+    const vi6 = gl.getUniformLocation(sphereProgram.id, "projMatrix");
+    gl.uniformMatrix4fv(vi5,false,Matrix.viewMatrix);
+    gl.uniformMatrix4fv(vi6,false,Matrix.projMatrix);
     gl.drawElements(gl.TRIANGLES,sphereProgram.index.length,gl.UNSIGNED_SHORT,0);
+    */
 
     //cube
     gl.useProgram(program.id);
@@ -43,11 +50,11 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-0.50),//座標
+        pos : vec3(0,0,-10.00),//座標
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
-      const texFav = new Texture("fav.png",0);
+      const texFav = new Texture("skydome.png",0);
       const texSkydome = new Texture("skydome.png",1);
 
       this.SetShader().then(res);
@@ -64,11 +71,9 @@ export default class Main{
         gl.attachShader(sphereProgram.id,fs);
         gl.linkProgram(sphereProgram.id);
         gl.useProgram(sphereProgram.id);
-        //gl.enable(gl.DEPTH_TEST);
         if (!gl.getProgramParameter(sphereProgram.id, gl.LINK_STATUS)) {
           console.log(gl.getProgramInfoLog(spehreProgram.id))
         }
-
         const texuv = [
           0.0 , 0.0 ,
           0.0 , 1.0 ,
@@ -76,21 +81,22 @@ export default class Main{
           1.0 , 1.0 ,
         ]
         const position = [
-          0.0 , 0.0 ,
-          1.0 , 0.0 ,
-          0.0 , 1.0 ,
-          1.0 , 1.0 ,
+          -10.0 , 10.0 ,10.0,
+          10.0 , 10.0 ,10.0,
+          10.0 , -10.0 ,10.0,
+          -10.0 , -10.0 ,10.0,
         ]
         const index = [
-          0,1,2,1,2,3,
+          0,1,2,1,2,3
         ]
         const ibo = new IndexBuffer(index);
-        //const texuvBuffer = new VertexBuffer(texuv);
-        //this.SetAttribute(sphereProgram.id,"uv",2,texuvBuffer.id);
-        this.SetAttribute(sphereProgram.id,"position",2,new VertexBuffer(position).id);
+        const texuvBuffer = new VertexBuffer(texuv);
+        this.SetAttribute(sphereProgram.id,"uv",2,texuvBuffer.id);
+        this.SetAttribute(sphereProgram.id,"position",3,new VertexBuffer(position).id);
         sphereProgram.index = index;
         sphereProgram.ibo = ibo;
 
+        gl.uniform1i(gl.getUniformLocation(sphereProgram.id,"skyTex"),1);
       })
       //Cube
       program = new Program();
@@ -106,7 +112,7 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(0.3,0,0.10);
+        const cube = new Cube(0,0,0,0.30);
 
         const ibo = new IndexBuffer(cube.index);
         const positionBuffer = new VertexBuffer(cube.position);
@@ -120,7 +126,6 @@ export default class Main{
         program.ibo = ibo;
 
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
-        //gl.uniform1i(gl.getUniformLocation(sphereProgram.id,"skyTex"),1);
         res();
       });
     });
@@ -133,8 +138,8 @@ export default class Main{
   }
   static SendUniform(){
     const vi = gl.getUniformLocation(program.id, "rotMatrix");
-    const vi2 = gl.getUniformLocation(program.id, "viewMatrix");
     const vi3 = gl.getUniformLocation(program.id, "poMatrix");
+    const vi2 = gl.getUniformLocation(program.id, "viewMatrix");
     const vi4 = gl.getUniformLocation(program.id, "projMatrix");
     gl.uniformMatrix4fv(vi,false,Matrix.rotMatrix);
     gl.uniformMatrix4fv(vi2,false,Matrix.viewMatrix);

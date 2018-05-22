@@ -1,6 +1,9 @@
 precision mediump float;
 
+uniform sampler2D skyTex;
+varying vec2 vUV;
+
 void main(){
-  vec2 uv = gl_FragCoord.xy/512.0;
-  gl_FragColor = vec4(uv,1.0,1.0);
+  vec3 color = texture2D(skyTex,vUV).rgb;
+  gl_FragColor = vec4(color,1.0);
 }

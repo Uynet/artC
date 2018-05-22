@@ -1,19 +1,9 @@
 import Main from "./main.js";
 export default class Matrix{
-  //使ってない
   static Init(){
     this.viewMatrix = [];
     this.rotMatrix = [];
-    const near = 0;
-    const far = -3;
-    const t = 1;//画角
-    const asp = 1;//アスペクト日
-    this.projMatrix = [
-      1 / (asp * t),0,0,0,
-      0,1/t,0,0,
-      0,0,(near+far) / (near-far), -1,
-      0,0,2*near*far/(near-far),0.001
-    ];
+    this.projMatrix = [];
   }
   static Size(t){
     let k = t%60;
@@ -24,6 +14,16 @@ export default class Matrix{
   static Update(){
     let timer = Main.timer;
     let s = this.Size(timer);
+    const near = 0;
+    const far = -3;
+    const t = 1;//画角
+    const asp = 1;//アスペクト日
+    this.projMatrix = [
+      1 / (asp * t),0,0,0,
+      0,1/t,0,0,
+      0,0,(near+far) / (near-far), -1,
+      0,0,2*near*far/(near-far),0.001
+    ];
     this.poMatrix = [
       s,0,0,0,
       0,s,0,0,

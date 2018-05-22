@@ -9,6 +9,6 @@ void main() {
   vec2 uv = gl_FragCoord.xy/512.0;
   vec3 light = normalize(vec3(-1,0,0));
   float diff = 5.0*dot(normal,light);
-  vec3 color = diff+texture2D(favTex, vUV).rgb;
+  vec3 color = texture2D(favTex, vUV).rgb;
   gl_FragColor = vec4(color,1.);
 }

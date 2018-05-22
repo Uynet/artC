@@ -2,6 +2,7 @@ attribute vec4 color;
 attribute vec3 position;
 varying vec4 vColor;
 varying vec3 normal;
+
 uniform mat4 rotMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
