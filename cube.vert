@@ -1,7 +1,8 @@
 attribute vec4 color;
 attribute vec3 position;
 varying vec4 vColor;
-varying vec3 normal;
+attribute vec3 normal;
+varying vec3 vNorm;
 
 uniform mat4 rotMatrix;
 uniform mat4 viewMatrix;
@@ -12,7 +13,9 @@ attribute vec2 uv;
 varying vec2 vUV;
 
 void main(){
-  normal = position;
+  vNorm = normal;
+  vec4 i = rotMatrix * vec4(vNorm,1.0);
+  vNorm = i.xyz;
   vUV = uv;
   vColor = color;
   vec4 a = rotMatrix*vec4(position,1.0);

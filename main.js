@@ -14,21 +14,17 @@ export default class Main{
     this.Boot().then(Main.Render);
   }
   static Render(){
-    Main.camera.pos.z *= 0.99;
+    //Main.camera.pos.z *= 0.99;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     //p
     gl.useProgram(program.id);
     Matrix.Update();
     Main.SendUniform();
-    program.ibo.bind();
 
-    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
-    gl.drawArrays(gl.TRIANGLE_STRIP,4,4);
-    gl.drawArrays(gl.TRIANGLE_STRIP,8,4);
-    gl.drawArrays(gl.TRIANGLE_STRIP,12,4);
-    gl.drawArrays(gl.TRIANGLE_STRIP,16,4);
-    gl.drawArrays(gl.TRIANGLE_STRIP,20,4);
+    for(let i=0;i<6;i++){
+      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
+    }
 
     gl.flush();
 
@@ -44,7 +40,7 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-4.00),//座標
+        pos : vec3(0,0,-1.50),//座標
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
@@ -72,14 +68,13 @@ export default class Main{
 
         const cube = new Cube(0,0,0,0.30);
 
-        const ibo = new IndexBuffer(cube.index);
         const positionBuffer = new VertexBuffer(cube.position);
+        const normalBuffer = new VertexBuffer(cube.normal);
         const texuvBuffer = new VertexBuffer(cube.texuv);
         this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
         this.SetAttribute(program.id,"position",3,positionBuffer.id);
+        this.SetAttribute(program.id,"normal",3,normalBuffer.id);
 
-        program.index = cube.index;
-        program.ibo = ibo;
 
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
         res();

@@ -31,21 +31,21 @@ export default class Matrix{
       0,0,0,1,
     ]
     let rot1 = [
-      cos(timer/50),0,-sin(timer/50),0,
+      cos(timer/57),0,-sin(timer/57),0,
       0,1,0,0,
-      sin(timer/50),0,cos(timer/50),0,
+      sin(timer/57),0,cos(timer/57),0,
       0,0,0,1,
     ];
     let e1 = [
-      cos(timer/80),-sin(timer/80),0,0,
-      sin(timer/80),cos(timer/80),0,0,
+      cos(timer/71),-sin(timer/71),0,0,
+      sin(timer/71),cos(timer/71),0,0,
       0,0,1,0,
       0,0,0,1,
     ];
     let e2 = [
       1,0,0,0,
-      0,cos(timer/45),-sin(timer/45),0,
-      0,sin(timer/45),cos(timer/45),0,
+      0,cos(timer/41),-sin(timer/41),0,
+      0,sin(timer/41),cos(timer/41),0,
       0,0,0,1,
     ];
     this.viewMatrix = this.LookAt(Main.camera.pos,Main.camera.forward,Main.camera.up);
@@ -60,6 +60,6 @@ export default class Matrix{
       side.y, up.y, forward.y, 0,
       side.z, up.z, forward.z, 0,
       -dot(eye, side), -dot(eye, up), -dot(eye, forward), 1
-    ]
+    ];
   }
 }
