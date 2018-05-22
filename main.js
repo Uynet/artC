@@ -14,21 +14,34 @@ export default class Main{
     this.Boot().then(Main.Render);
   }
   static Render(){
-    //Main.camera.pos.z *= 0.99;
+    Main.camera.pos.z *= 0.8
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     //p
     gl.useProgram(program.id);
     Matrix.Update();
     Main.SendUniform();
+    let eye = [
+      Main.camera.pos.x,
+      Main.camera.pos.y,
+      Main.camera.pos.z,
+    ]
+    gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
 
+    //鳥
+    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
     for(let i=0;i<6;i++){
+      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
+    }
+    //空
+    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
+    for(let i=6;i<12;i++){
       gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
     }
 
     gl.flush();
 
-    Main.timer+=1;
+    Main.timer+=0.4;
     requestAnimationFrame(Main.Render);
   }
   static Boot(){
@@ -40,7 +53,7 @@ export default class Main{
       gl = canvas.getContext("webgl");
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-1.50),//座標
+        pos : vec3(0,0,-7800.50),//座標
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
@@ -66,17 +79,18 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(0,0,0,0.30);
+        const cube = new Cube(0,0,0,3.00);
+        const cube2 = new Cube(0,0,0,0.00030);
 
-        const positionBuffer = new VertexBuffer(cube.position);
-        const normalBuffer = new VertexBuffer(cube.normal);
-        const texuvBuffer = new VertexBuffer(cube.texuv);
+        const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position));
+        const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal));
+        const texuvBuffer = new VertexBuffer(cube.texuv.concat(cube2.texuv));
         this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
         this.SetAttribute(program.id,"position",3,positionBuffer.id);
         this.SetAttribute(program.id,"normal",3,normalBuffer.id);
 
-
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
+        gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
         res();
       });
     });
