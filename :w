@@ -17,7 +17,7 @@ export default class Main{
   }
   static Render(){
     Main.param.innerHTML = Main.alpha;
-    if(Main.timer > 35) Main.camera.pos.z *= 0.93
+    if(Main.timer%300 < 150) Main.camera.pos.z *= 0.99
     //else Main.camera.pos.z *= 1/0.9;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -30,22 +30,17 @@ export default class Main{
       Main.camera.pos.y,
       Main.camera.pos.z,
     ]
-    Main.camera.forward = vec3(Math.sin(Main.timer/40),0,Math.cos(Main.timer/40))//カメラの向き
+    //Main.camera.forward = vec3(Math.cos(Main.timer/100),Math.sin(Main.timer/100),0),//カメラの向き
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
 
     //鳥
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=12;i<18;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
-    //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
     for(let i=0;i<6;i++){
       gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
     }
-    //鳥
+    //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=6;i<12;i++){
+    for(let i=6;i<10;i++){
       gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
     }
 
@@ -66,7 +61,7 @@ export default class Main{
       }
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-150000.00),//座標
+        pos : vec3(0,0,-1500.00),//座標
         forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
       }
@@ -92,9 +87,9 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube2 = new Cube(0,0,0,0.00030);
         const cube = new Cube(0,0,0,3);
-        const cube3 = new Cube(0,0,0,3000);
+        const cube2 = new Cube(0,0,0,0.0030);
+        const cube3 = new Cube(0,0,0,300);
 
         const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position).concat(cube3.position));
         const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal).concat(cube3.normal));
@@ -127,8 +122,7 @@ export default class Main{
   }
 }
 
-document.addEventListener("deviceorientation", function(event) {
-  console.log(event);
+window.addEventListener("deviceorientation", function(event) {
     Main.alpha = event.alpha;
     Main.beta = event.beta;
     Main.gamma = event.gamma;

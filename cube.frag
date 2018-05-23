@@ -5,6 +5,7 @@ uniform sampler2D favTex;
 uniform sampler2D skyTex;
 varying vec3 vNorm;
 varying vec3 vPos;
+varying float z;
 uniform int texnum;
 uniform vec3 eye;
 
@@ -21,8 +22,10 @@ void main() {
     float theta = atan(ref.z,ref.x);
     float phi = atan(ref.y,length(ref.xz));
     vec3 refColor = texture2D(skyTex, vec2(theta/PI/2.0001+0.5,-phi/PI+0.5)).rgb;
-    color = 0.4*color + 0.7*refColor;
+    color = mix(color,refColor,0.6);
   }
-  if(texnum == 1) color = texture2D(skyTex, vUV).rgb;
+  if(texnum == 1){
+    color = texture2D(skyTex, vUV).rgb;
+  }
   gl_FragColor = vec4(color,1.);
 }

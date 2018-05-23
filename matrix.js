@@ -14,8 +14,8 @@ export default class Matrix{
   static Update(){
     let timer = Main.timer;
     let s = this.Size(timer);
-    const near = 0;
-    const far = -3;
+    const near = 0.0;
+    const far = 1000;
     const t = 1;//画角
     const asp = 1;//アスペクト日
     this.projMatrix = [
