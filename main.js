@@ -12,8 +12,11 @@ export default class Main{
   static Init(){
     Matrix.Init();
     this.Boot().then(Main.Render);
+    this.param = document.getElementById("poyo");
+    this.alpha = "0";
   }
   static Render(){
+    Main.param.innerHTML = Main.alpha;
     Main.camera.pos.z *= 0.8
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -117,9 +120,9 @@ export default class Main{
 }
 
 window.addEventListener("deviceorientation", function(event) {
-    this.alpha = event.alpha;
-    this.beta = event.beta;
-    this.gamma = event.gamma;
+    Main.alpha = event.alpha;
+    Main.beta = event.beta;
+    Main.gamma = event.gamma;
 }, false);
 
 (function(){

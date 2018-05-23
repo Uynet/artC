@@ -20,7 +20,7 @@ void main() {
     vec3 ref = normalize(reflect(eye-vPos,normalize(vNorm)));
     float theta = atan(ref.z,ref.x);
     float phi = atan(ref.y,length(ref.xz));
-    vec3 refColor = texture2D(skyTex, vec2(theta/PI/2.0+0.5,-phi/PI+0.5)).rgb;
+    vec3 refColor = texture2D(skyTex, vec2(theta/PI/2.0001+0.5,-phi/PI+0.5)).rgb;
     color = 0.4*color + 0.7*refColor;
   }
   if(texnum == 1) color = texture2D(skyTex, vUV).rgb;
