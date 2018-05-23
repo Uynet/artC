@@ -51,6 +51,9 @@ export default class Main{
       canvas.width = 800;
       canvas.height = 800;
       gl = canvas.getContext("webgl");
+      if(!gl){
+        cl("webGL対応してないよ　うんち");
+      }
       this.gl = gl;
       this.camera = {
         pos : vec3(0,0,-7800.50),//座標
