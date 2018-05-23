@@ -30,7 +30,7 @@ export default class Main{
       Main.camera.pos.y,
       Main.camera.pos.z,
     ]
-    Main.camera.forward = vec3(Math.sin(Main.timer/40),0,Math.cos(Main.timer/40))//カメラの向き
+    //Main.camera.forward = vec3(Math.sin(Main.timer/40),0,Math.cos(Main.timer/40))//カメラの向き
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
 
     //鳥
@@ -126,7 +126,7 @@ export default class Main{
     gl.uniformMatrix4fv(vi4,false,Matrix.projMatrix);
   }
 }
-
+onload =   Main.Init();
 document.addEventListener("deviceorientation", function(event) {
   console.log(event);
     Main.alpha = event.alpha;
@@ -134,6 +134,3 @@ document.addEventListener("deviceorientation", function(event) {
     Main.gamma = event.gamma;
 }, false);
 
-(function(){
-  Main.Init();
-})();
