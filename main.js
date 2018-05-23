@@ -113,6 +113,11 @@ export default class Main{
   }
 }
 
+window.addEventListener("deviceorientation", function(event) {
+    this.alpha = event.alpha;
+    this.beta = event.beta;
+    this.gamma = event.gamma;
+}, false);
 
 (function(){
   Main.Init();
