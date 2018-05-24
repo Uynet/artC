@@ -25,12 +25,19 @@ void main() {
     color = mix(color,refColor,0.6);
   }
   if(texnum == 1){
-    vec2 uv = gl_FragCoord.xy/512.0;
+    vec2 uv = gl_FragCoord.xy/512.0-0.5;
+    float r = length(uv);
+    float t = atan(uv.x,uv.y);
     float po = PI/16.0;
-    vec3 dist = rotCameraPhi*rotCameraTheta*normalize(vec3(uv-0.5,1.0));
+    float a = 0.1;//半径
+    float b = 0.1;
+    float r2 = (r-a)*(r-a)/b;
+    vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
+    vec3 dist = rotCameraPhi*rotCameraTheta*normalize(vec3(uv2,1.0));
     float theta = atan(dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/1.0000+0.5,-phi/PI+0.5)).rgb;
+    if(length(uv2)<a)color = vec3(0);
   }
   gl_FragColor = vec4(color,1.);
 }
