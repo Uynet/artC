@@ -66,13 +66,25 @@ export default class Main{
             this.pos.x,
             this.pos.y,
             this.pos.z,
-          ]
+          ];
+          this.theta+=0.01;
+          this.phi+=0.02;
           let t = this.theta;
           let p = this.phi;
+          let rotCameraTheta = [
+            cos(t),-sin(t),0,
+            sin(t),cos(t),0,
+            0,0,1,
+          ]
+          let rotCameraPhi = [
+            cos(p),0,-sin(p),
+            0,1,0,
+            sin(p),0,cos(p),
+          ]
           //this.forward = vec3(Math.sin(t),0,Math.cos(t))//カメラの向き
+          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraTheta"),false,rotCameraTheta);
+          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraPhi"),false,rotCameraPhi);
           gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
-          gl.uniform1f(gl.getUniformLocation(program.id,"cameraTheta"),t);
-          gl.uniform1f(gl.getUniformLocation(program.id,"cameraPhi"),p);
         },
       }
       const texFav = new Texture("resource/fav.png",0);
