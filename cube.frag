@@ -30,7 +30,7 @@ void main() {
     float po = PI/16.0;
     float theta = cameraTheta + po * (2.0*u-1.0);
     float phi = cameraPhi + po * (2.0*v-1.0);
-    color = texture2D(skyTex, vec2(theta/PI/2.0001+0.5,-phi/PI+0.5)).rgb;
+    color = texture2D(skyTex, vec2(theta/PI/2.0+0.5,-phi/PI+0.5)).rgb;
   }
   gl_FragColor = vec4(color,1.);
 }

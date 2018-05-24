@@ -1,4 +1,4 @@
-import Main from "./main.js";
+import Main from "../main.js";
 const id = 0;
 
 export default class Texture{

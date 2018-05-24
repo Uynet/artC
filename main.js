@@ -1,16 +1,18 @@
-import VertexBuffer from "./vertexBuffer.js";
-import IndexBuffer from "./indexBuffer.js";
-import Program from "./program.js";
+import VertexBuffer from "./GLObject/vertexBuffer.js";
+import IndexBuffer from "./GLObject/indexBuffer.js";
+import Program from "./GLObject/program.js";
 import Cube from "./cube.js";
-import Shader from "./shader.js";
+import Shader from "./GLObject/shader.js";
 import Matrix from "./matrix.js";
-import Texture from "./Texture.js";
+import Texture from "./GLObject/Texture.js";
+import EntityManager from "./entityManager.js";
 
-let gl,canvas,program,sphereProgram;
+let gl,canvas,program;
 
 export default class Main{
   static Init(){
     Matrix.Init();
+    EntityManager.Init();
     this.Boot().then(Main.Render);
     this.param = document.getElementById("poyo");
     this.alpha = "0";
@@ -18,30 +20,14 @@ export default class Main{
   static Render(){
     Main.param.innerHTML = Main.alpha;
     if(Main.timer > 35) Main.camera.pos.z *= 0.71;
-    //else Main.camera.pos.z *= 1/0.9;
+    Main.camera.Update();
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    //p
+
     gl.useProgram(program.id);
     Matrix.Update();
     Main.SendUniform();
 
-    //カメラ関連
-    let eye = [
-      Main.camera.pos.x,
-      Main.camera.pos.y,
-      Main.camera.pos.z,
-    ]
-    
-    Main.camera.theta += 0.003;
-    //Main.camera.phi += 0.0006;
-
-    let t = Main.camera.theta;
-    let p = Main.camera.phi;
-    Main.camera.forward = vec3(Math.sin(t),0,Math.cos(t))//カメラの向き
-    gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
-    gl.uniform1f(gl.getUniformLocation(program.id,"cameraTheta"),t);
-    gl.uniform1f(gl.getUniformLocation(program.id,"cameraPhi"),p);
     //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
     for(let i=0;i<6;i++){
@@ -65,9 +51,8 @@ export default class Main{
       canvas.width = 800;
       canvas.height = 800;
       gl = canvas.getContext("webgl");
-      if(!gl){
-        cl("webGL対応してないよ　うんち");
-      }
+      if(!gl)cl("webGL対応してないよ");
+
       this.gl = gl;
       this.camera = {
         pos : vec3(0,0,-1500.00),//座標
@@ -75,9 +60,23 @@ export default class Main{
         up : vec3(0,1,0),//カメラの上方向
         theta : 0,//カメラのz軸方向の回転?
         phi : 0,//カメラのy軸方向の回転?
+        Update : function(){
+          //カメラ関連
+          let eye = [
+            this.pos.x,
+            this.pos.y,
+            this.pos.z,
+          ]
+          let t = this.theta;
+          let p = this.phi;
+          //this.forward = vec3(Math.sin(t),0,Math.cos(t))//カメラの向き
+          gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+          gl.uniform1f(gl.getUniformLocation(program.id,"cameraTheta"),t);
+          gl.uniform1f(gl.getUniformLocation(program.id,"cameraPhi"),p);
+        },
       }
-      const texFav = new Texture("fav.png",0);
-      const texSkydome = new Texture("skydome.png",1);
+      const texFav = new Texture("resource/fav.png",0);
+      const texSkydome = new Texture("resource/skydome.png",1);
 
       this.SetShader().then(res);
     });
@@ -98,8 +97,10 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube2 = new Cube(0,0,0,0.00030);
         const cube = new Cube(0,0,0,3);
+        const cube2 = new Cube(0,0,0,0.00030);
+        EntityManager.Add(cube);
+        EntityManager.Add(cube2);
 
         const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position))
         const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal))
