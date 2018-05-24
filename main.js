@@ -17,7 +17,7 @@ export default class Main{
   }
   static Render(){
     Main.param.innerHTML = Main.alpha;
-    if(Main.timer > 35) Main.camera.pos.z *= 0.93
+    if(Main.timer > 35) Main.camera.pos.z *= 0.71;
     //else Main.camera.pos.z *= 1/0.9;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -25,19 +25,23 @@ export default class Main{
     gl.useProgram(program.id);
     Matrix.Update();
     Main.SendUniform();
+
+    //カメラ関連
     let eye = [
       Main.camera.pos.x,
       Main.camera.pos.y,
       Main.camera.pos.z,
     ]
-    //Main.camera.forward = vec3(Math.sin(Main.timer/40),0,Math.cos(Main.timer/40))//カメラの向き
-    gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+    
+    Main.camera.theta += 0.003;
+    //Main.camera.phi += 0.0006;
 
-    //鳥
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=12;i<18;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
+    let t = Main.camera.theta;
+    let p = Main.camera.phi;
+    Main.camera.forward = vec3(Math.sin(t),0,Math.cos(t))//カメラの向き
+    gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+    gl.uniform1f(gl.getUniformLocation(program.id,"cameraTheta"),t);
+    gl.uniform1f(gl.getUniformLocation(program.id,"cameraPhi"),p);
     //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
     for(let i=0;i<6;i++){
@@ -66,9 +70,11 @@ export default class Main{
       }
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-150000.00),//座標
-        forward : vec3(0,0,-1),//カメラの向き
+        pos : vec3(0,0,-1500.00),//座標
+        forward : vec3(0,0.0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
+        theta : 0,//カメラのz軸方向の回転?
+        phi : 0,//カメラのy軸方向の回転?
       }
       const texFav = new Texture("fav.png",0);
       const texSkydome = new Texture("skydome.png",1);
@@ -94,11 +100,10 @@ export default class Main{
 
         const cube2 = new Cube(0,0,0,0.00030);
         const cube = new Cube(0,0,0,3);
-        const cube3 = new Cube(0,0,0,3000);
 
-        const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position).concat(cube3.position));
-        const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal).concat(cube3.normal));
-        const texuvBuffer = new VertexBuffer(cube.texuv.concat(cube2.texuv).concat(cube3.texuv));
+        const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position))
+        const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal))
+        const texuvBuffer = new VertexBuffer(cube.texuv.concat(cube2.texuv))
         this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
         this.SetAttribute(program.id,"position",3,positionBuffer.id);
         this.SetAttribute(program.id,"normal",3,normalBuffer.id);
