@@ -11,6 +11,7 @@ let gl,canvas,program;
 
 export default class Main{
   static Init(){
+    this.holeRadius = 0.07;
     Matrix.Init();
     EntityManager.Init();
     this.Boot().then(Main.Render);
@@ -28,6 +29,8 @@ export default class Main{
     Matrix.Update();
     Main.SendUniform();
 
+    Main.holeRadius += 0.001*Math.sin(Main.timer/10);
+    gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
     //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
     for(let i=0;i<6;i++){
@@ -88,6 +91,7 @@ export default class Main{
         },
       }
       const texFav = new Texture("resource/fav.png",0);
+      const texFavNorm = new Texture("resource/NormalMap.png",2);
       const texSkydome = new Texture("resource/skydome.png",1);
 
       this.SetShader().then(res);
@@ -123,6 +127,7 @@ export default class Main{
 
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
         gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
+        gl.uniform1i(gl.getUniformLocation(program.id,"favTexNorm"),2);
         res();
       });
     });
