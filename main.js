@@ -20,6 +20,7 @@ export default class Main{
   }
   static Render(){
     Main.camera.Update();
+    Main.param.innerHTML = Main.alpha;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -68,8 +69,8 @@ export default class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.theta+=0.01;
-          this.phi+=0.02;
+          this.theta=Main.alpha;
+          this.phi=Main.beta;
           let t = this.theta;
           let p = this.phi;
           let rotCameraTheta = [
