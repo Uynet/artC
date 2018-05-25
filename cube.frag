@@ -3,6 +3,7 @@ varying vec4 vColor;
 varying vec2 vUV;
 uniform sampler2D favTex;
 uniform sampler2D favTexNorm;
+uniform sampler2D mountainTex;
 uniform sampler2D skyTex;
 varying vec3 vNorm;
 varying vec3 vPos;
@@ -37,7 +38,7 @@ void main() {
     float r = length(uv);
     float t = atan(uv.x,uv.y);
     float r3 = r-holeRadius;//半径
-    float b = 0.06;
+    float b = holeRadius;
     float r2 = r3*r3/b;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
     vec3 dist = rotCameraPhi*rotCameraTheta*normalize(vec3(uv2,1.0));
@@ -45,8 +46,11 @@ void main() {
     float phi = atan(dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
     //ブラックホール
-    if(length(uv2)<holeRadius)color = texture2D(skyTex, (uv+0.5)).rgb;
-    if(length(uv2)<holeRadius*0.8)color = texture2D(favTex, (uv+0.5)).rgb;
+    dist = rotCameraPhi*rotCameraTheta*normalize(vec3(uv,1.0));
+    theta = atan(dist.z,dist.x);
+    phi = atan(dist.y,length(dist.xz));
+    if(length(r2)<holeRadius)color = texture2D(skyTex, (uv+0.5)).rgb;
+    if(length(r2)<holeRadius*0.8)color = texture2D(mountainTex, vec2(3.0*theta/PI/2.01+0.5,3.0*phi/PI+0.5)).rgb;
   }
   gl_FragColor = vec4(color,1.);
 }

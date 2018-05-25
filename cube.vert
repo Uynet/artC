@@ -23,6 +23,7 @@ void main(){
   vUV = uv;
   vColor = color;
   vec4 a = rotMatrix*vec4(position,1.0);
+  //vec4 a = vec4(position,1.0);
   a *= poMatrix;
   z = a.z;
   gl_Position = projMatrix * viewMatrix * a;

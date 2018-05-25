@@ -11,7 +11,7 @@ let gl,canvas,program;
 
 export default class Main{
   static Init(){
-    this.holeRadius = 0.07;
+    this.holeRadius = 0.1;
     Matrix.Init();
     EntityManager.Init();
     this.Boot().then(Main.Render);
@@ -20,7 +20,6 @@ export default class Main{
   }
   static Render(){
     Main.param.innerHTML = Main.alpha;
-    if(Main.timer > 35) Main.camera.pos.z *= 0.71;
     Main.camera.Update();
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -29,7 +28,7 @@ export default class Main{
     Matrix.Update();
     Main.SendUniform();
 
-    Main.holeRadius += 0.001*Math.sin(Main.timer/10);
+    //Main.holeRadius += 0.007*Math.sin(Main.timer/60);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
     //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
@@ -58,7 +57,7 @@ export default class Main{
 
       this.gl = gl;
       this.camera = {
-        pos : vec3(0,0,-1500.00),//座標
+        pos : vec3(0,0,-3.00),//座標
         forward : vec3(0,0.0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
         theta : 0,//カメラのz軸方向の回転?
@@ -85,6 +84,14 @@ export default class Main{
             sin(p),0,cos(p),
           ]
           //this.forward = vec3(Math.sin(t),0,Math.cos(t))//カメラの向き
+            /*
+          let forward = multMatrixVec3(rotCameraTheta,[this.forward.x,this.forward.y,this.forward.z]);
+          this.forward = {
+            x : forward[0],
+            y : forward[1],
+            z : forward[2],
+          }
+          */
           gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraTheta"),false,rotCameraTheta);
           gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraPhi"),false,rotCameraPhi);
           gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
@@ -93,6 +100,7 @@ export default class Main{
       const texFav = new Texture("resource/fav.png",0);
       const texFavNorm = new Texture("resource/NormalMap.png",2);
       const texSkydome = new Texture("resource/skydome.png",1);
+      const texMountaindome = new Texture("resource/mountain.png",3);
 
       this.SetShader().then(res);
     });
@@ -113,8 +121,8 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(0,0,0,3);
-        const cube2 = new Cube(0,0,0,0.00030);
+        const cube = new Cube(0,0,0,30);
+        const cube2 = new Cube(0,0,0,1.00);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
 
@@ -128,6 +136,7 @@ export default class Main{
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
         gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
         gl.uniform1i(gl.getUniformLocation(program.id,"favTexNorm"),2);
+        gl.uniform1i(gl.getUniformLocation(program.id,"mountainTex"),3);
         res();
       });
     });

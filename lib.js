@@ -67,6 +67,16 @@ const multMatrix = (m1,m2)=>{
   }
   return m;
 }
+
+const multMatrixVec3 = (m1,v1)=>{
+  let v = new Array(3).fill(0);
+  for(let y=0;y<3;y++){
+    for(let x=0;x<3;x++){
+      v[y] += m1[3*y+x]*v1[x]; 
+    }
+  }
+  return v;
+}
 //外積 3次元のみ
 const cross = (v1,v2)=>{
   return {
