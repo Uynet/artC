@@ -14,12 +14,11 @@ export default class Main{
     this.holeRadius = 0.1;
     Matrix.Init();
     EntityManager.Init();
-    this.Boot().then(Main.Render);
     this.param = document.getElementById("poyo");
     this.alpha = "0";
+    this.Boot().then(Main.Render);
   }
   static Render(){
-    Main.param.innerHTML = Main.alpha;
     Main.camera.Update();
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -53,7 +52,7 @@ export default class Main{
       canvas.width = 800;
       canvas.height = 800;
       gl = canvas.getContext("webgl");
-      if(!gl)cl("webGL対応してないよ");
+      if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
       this.camera = {
