@@ -87,6 +87,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 let gl,canvas,program;
+let jairoPhi,jairoTheta;
 
 class Main{
   static Init(){
@@ -95,6 +96,13 @@ class Main{
     __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
     this.alpha = "0";
+
+    document.addEventListener("deviceorientation", function(event) {
+      Main.camera.theta = event.alpha;
+      Main.camera.phi = event.beta;
+      //Main.gamma = event.gamma;
+    }, false);
+
     this.Boot().then(Main.Render);
   }
   static Render(){
@@ -148,8 +156,6 @@ class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.theta=Main.alpha;
-          this.phi=Main.beta;
           let t = this.theta;
           let p = this.phi;
           let rotCameraTheta = [
@@ -240,12 +246,7 @@ class Main{
 /* harmony export (immutable) */ __webpack_exports__["default"] = Main;
 
 onload =   Main.Init();
-document.addEventListener("deviceorientation", function(event) {
-  console.log(event);
-    Main.alpha = event.alpha;
-    Main.beta = event.beta;
-    Main.gamma = event.gamma;
-}, false);
+//document.addEventListener("deviceorientation", function(event) {
 
 
 

@@ -8,6 +8,7 @@ import Texture from "./GLObject/Texture.js";
 import EntityManager from "./entityManager.js";
 
 let gl,canvas,program;
+let jairoPhi,jairoTheta;
 
 export default class Main{
   static Init(){
@@ -16,6 +17,13 @@ export default class Main{
     EntityManager.Init();
     this.param = document.getElementById("poyo");
     this.alpha = "0";
+
+    document.addEventListener("deviceorientation", function(event) {
+      Main.camera.theta = event.alpha;
+      Main.camera.phi = event.beta;
+      //Main.gamma = event.gamma;
+    }, false);
+
     this.Boot().then(Main.Render);
   }
   static Render(){
@@ -69,8 +77,6 @@ export default class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.theta=Main.alpha;
-          this.phi=Main.beta;
           let t = this.theta;
           let p = this.phi;
           let rotCameraTheta = [
@@ -159,10 +165,5 @@ export default class Main{
   }
 }
 onload =   Main.Init();
-document.addEventListener("deviceorientation", function(event) {
-  console.log(event);
-    Main.alpha = event.alpha;
-    Main.beta = event.beta;
-    Main.gamma = event.gamma;
-}, false);
+//document.addEventListener("deviceorientation", function(event) {
 
