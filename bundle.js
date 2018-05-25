@@ -89,10 +89,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 let gl,canvas,program;
 
 window.ondeviceorientation = function(event) {
-  cl(event)
-  Main.camera.theta = event.alpha;
-  Main.camera.phi = event.beta;
-  //Main.gamma = event.gamma;
+  cl(event.alpha)
+  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 
 class Main{
@@ -106,7 +106,7 @@ class Main{
   }
   static Render(){
     Main.camera.Update();
-    Main.param.innerHTML = Main.camera.theta;
+    Main.param.innerHTML = Main.camera.alpha;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -146,8 +146,9 @@ class Main{
         pos : vec3(0,0,-3.00),//座標
         forward : vec3(0,0.0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
-        theta : 0,//カメラのz軸方向の回転?
-        phi : 0,//カメラのy軸方向の回転?
+        alpha : 0,//カメラのz軸方向の回転?
+        beta : 0,//カメラのx軸方向の回転?
+        gamma : 0,//カメラのy軸方向の回転?
         Update : function(){
           //カメラ関連
           let eye = [
@@ -155,17 +156,23 @@ class Main{
             this.pos.y,
             this.pos.z,
           ];
-          let t = this.theta;
-          let p = this.phi;
-          let rotCameraTheta = [
-            cos(t),-sin(t),0,
-            sin(t),cos(t),0,
+          let a = this.alpha;
+          let b = this.beta;
+          let c = this.gamma;
+          let rotCameraAlpha = [
+            cos(a),-sin(a),0,
+            sin(a),cos(a),0,
             0,0,1,
           ]
-          let rotCameraPhi = [
-            cos(p),0,-sin(p),
+          let rotCameraBeta = [
+            1,0,0,
+            0,cos(b),-sin(b),
+            0,sin(b),cos(b),
+          ]
+          let rotCameraGamma = [
+            cos(c),0,-sin(c),
             0,1,0,
-            sin(p),0,cos(p),
+            sin(c),0,cos(c),
           ]
           //this.forward = vec3(Math.sin(t),0,Math.cos(t))//カメラの向き
             /*
@@ -176,8 +183,9 @@ class Main{
             z : forward[2],
           }
           */
-          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraTheta"),false,rotCameraTheta);
-          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraPhi"),false,rotCameraPhi);
+          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraAlpha"),false,rotCameraAlpha);
+          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraBeta"),false,rotCameraBeta);
+          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCameraGamma"),false,rotCameraGamma);
           gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
         },
       }

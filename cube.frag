@@ -10,8 +10,9 @@ varying vec3 vPos;
 varying float z;
 uniform int texnum;
 uniform vec3 eye;
-uniform mat3 rotCameraTheta;
-uniform mat3 rotCameraPhi;
+uniform mat3 rotCameraAlpha;
+uniform mat3 rotCameraBeta;
+uniform mat3 rotCameraGamma;
 uniform float holeRadius;
 
 void main() {
@@ -41,12 +42,12 @@ void main() {
     float b = holeRadius;
     float r2 = r3*r3/b;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
-    vec3 dist = rotCameraPhi*rotCameraTheta*normalize(vec3(uv2,1.0));
+    vec3 dist = rotCameraBeta*rotCameraGamma*rotCameraAlpha*normalize(vec3(uv2,1.0));
     float theta = atan(dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
     //ブラックホール
-    dist = rotCameraPhi*rotCameraTheta*normalize(vec3(uv,1.0));
+    dist = rotCameraBeta*rotCameraGamma*rotCameraAlpha*normalize(vec3(uv,1.0));
     theta = atan(dist.z,dist.x);
     phi = atan(dist.y,length(dist.xz));
     if(length(r2)<holeRadius)color = texture2D(skyTex, (uv+0.5)).rgb;
