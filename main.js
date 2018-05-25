@@ -8,7 +8,13 @@ import Texture from "./GLObject/Texture.js";
 import EntityManager from "./entityManager.js";
 
 let gl,canvas,program;
-let jairoPhi,jairoTheta;
+
+window.ondeviceorientation = function(event) {
+  cl(event)
+  Main.camera.theta = event.alpha;
+  Main.camera.phi = event.beta;
+  //Main.gamma = event.gamma;
+};
 
 export default class Main{
   static Init(){
@@ -16,19 +22,12 @@ export default class Main{
     Matrix.Init();
     EntityManager.Init();
     this.param = document.getElementById("poyo");
-    this.alpha = "0";
-
-    document.addEventListener("deviceorientation", function(event) {
-      Main.camera.theta = event.alpha;
-      Main.camera.phi = event.beta;
-      //Main.gamma = event.gamma;
-    }, false);
 
     this.Boot().then(Main.Render);
   }
   static Render(){
     Main.camera.Update();
-    Main.param.innerHTML = Main.alpha;
+    Main.param.innerHTML = Main.camera.theta;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 

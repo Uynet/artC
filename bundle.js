@@ -87,7 +87,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 let gl,canvas,program;
-let jairoPhi,jairoTheta;
+
+window.ondeviceorientation = function(event) {
+  cl(event)
+  Main.camera.theta = event.alpha;
+  Main.camera.phi = event.beta;
+  //Main.gamma = event.gamma;
+};
 
 class Main{
   static Init(){
@@ -95,19 +101,12 @@ class Main{
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
-    this.alpha = "0";
-
-    document.addEventListener("deviceorientation", function(event) {
-      Main.camera.theta = event.alpha;
-      Main.camera.phi = event.beta;
-      //Main.gamma = event.gamma;
-    }, false);
 
     this.Boot().then(Main.Render);
   }
   static Render(){
     Main.camera.Update();
-    Main.param.innerHTML = Main.alpha;
+    Main.param.innerHTML = Main.camera.theta;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
