@@ -12,7 +12,7 @@ let gl,canvas,program;
 window.ondeviceorientation = function(event) {
   Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
   Main.camera.beta = -event.beta * 2*Math.PI/360;//x
-  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
+  Main.camera.gamma = (event.gamma+Math.PI.2) * 2*Math.PI/360;//y
 };
 
 export default class Main{
@@ -81,6 +81,7 @@ export default class Main{
             this.pos.z,
           ];
           this.gamma += 0.01;
+          if(this.gamma>Math.PI/2)this.gamma = -Math.PI/2;
           let a = this.alpha;// * 2*Math.PI/360;//z
           let b = this.beta;// * 2*Math.PI/360;//x
           let c = this.gamma;// * 2*Math.PI/360;//y
