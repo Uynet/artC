@@ -16,14 +16,15 @@ uniform float holeRadius;
 void main() {
   vec2 uv = gl_FragCoord.xy/800.0;
   vec3 light = normalize(vec3(1,1,0));
-  vec3 normalMap = texture2D(favTexNorm,vUV).rgb;//法線マップのデータ
-  normalMap.r *= 10.;
-  normalMap.g *= 10.;
-  vec3 normal = normalize(vNorm + normalMap);
+  vec3 normal = vNorm;
   float diff = dot(normal,light);//拡散光
   vec3 color;
   float PI = 3.14159265;
   if(texnum == 0) {
+    vec3 normalMap = texture2D(favTexNorm,vUV).rgb;//法線マップのデータ
+    normalMap.r *= 10.;
+    normalMap.g *= 10.;
+    normal = normalize(vNorm + normalMap);
     color = mix(vec3(diff) , texture2D(favTex, vUV).rgb , 0.7);
     vec3 ref = normalize(reflect(eye-vPos,normalize(normal)));
     float theta = atan(ref.z,ref.x);
@@ -40,7 +41,6 @@ void main() {
     float b = holeRadius;
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
-    //vec3 dist = rotCamera*normalize(vec3(uv2,-1.0));
     vec3 dist = rotCamera*normalize(vec3(uv,-1.0));
     float theta = atan(dist.z,dist.x);
     float phi = atan(-dist.y,length(dist.xz));
@@ -54,6 +54,12 @@ void main() {
     if(length(uv2)<holeRadius)color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
     if(length(uv2)<holeRadius*0.8)color = texture2D(mountainTex, vec2(3.0*theta/PI/2.01+0.5,3.0*phi/PI+0.5)).rgb;
     */
+  }
+  if(texnum == 2) {
+    vec3 ref = normalize(reflect(eye-vPos,normalize(normal)));
+    float theta = atan(ref.z,ref.x);
+    float phi = atan(ref.y,length(ref.xz));
+    color = texture2D(mountainTex, vec2(theta/PI/2.+0.5,-phi/PI+0.5)).rgb;
   }
   gl_FragColor = vec4(color,1.);
 }

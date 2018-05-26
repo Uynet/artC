@@ -7,44 +7,48 @@ import Matrix from "./matrix.js";
 import Texture from "./GLObject/Texture.js";
 import EntityManager from "./entityManager.js";
 import Input from "./input.js";
+import Camera from "./camera.js";
 
 let gl,canvas,program;
 
-window.ondeviceorientation = function(event) {
-  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = event.beta * 2*Math.PI/360;//x
-  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
-};
 
 export default class Main{
   static Init(){
     this.holeRadius = 0.1;
+    this.camera = new Camera();
     Matrix.Init();
     Input.Init();
     EntityManager.Init();
     this.param = document.getElementById("poyo");
 
-    this.Boot().then(Main.Render);
+    this.Boot().then(Main.Run);
+  }
+  static Run(){
+    Main.Update();
+    Main.Render();
+    requestAnimationFrame(Main.Run);
+  }
+  static Update(){
+    Main.camera.Update(program);
+    //debug
+    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
+    Matrix.Update();
+    EntityManager.Update(program);
+    //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
+    Main.timer+=1;
   }
   static Render(){
-    Main.camera.Update();
-    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(program.id);
-    Matrix.Update();
     Main.SendUniform();
 
-    //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
 
     EntityManager.Draw(program);
 
     gl.flush();
-
-    Main.timer+=1;
-    requestAnimationFrame(Main.Render);
   }
   static Boot(){
     return new Promise(res=>{
@@ -56,72 +60,6 @@ export default class Main{
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
-      this.camera = {
-        pos : vec3(0,0,-3.00),//座標
-        up : vec3(0,0,1),//カメラの上方向
-        alpha : 0,//カメラのz軸方向の回転?
-        beta : 0,//カメラのx軸方向の回転?
-        gamma : 0,//カメラのy軸方向の回転?
-        Update : function(){
-          //カメラ関連
-          let eye = [
-            this.pos.x,
-            this.pos.y,
-            this.pos.z,
-          ];
-
-
-          if(Input.isKeyInput(88))this.alpha += 0.02;
-          if(Input.isKeyInput(90))this.alpha -= 0.02;
-          if(Input.isKeyInput(38))this.beta -= 0.02;
-          if(Input.isKeyInput(40))this.beta += 0.02;
-          if(Input.isKeyInput(37))this.gamma += 0.02;
-          if(Input.isKeyInput(39))this.gamma -= 0.02;
-
-          if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
-          if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
-          if(this.beta>Math.PI)this.beta -= 2*Math.PI;
-          if(this.beta<-Math.PI)this.beta += 2*Math.PI;
-          let b = -this.beta;// * 2*Math.PI/360;//x
-          let c = this.gamma//y;
-          let a = -this.alpha;// * 2*Math.PI/360;//z
-          if(c<0){
-            c+=Math.PI;
-            }
-          let rotCameraAlpha = [
-            cos(a),-sin(a),0,
-            sin(a),cos(a),0,
-            0,0,1,
-          ]
-          let rotCameraBeta = [
-            1,0,0,
-            0,cos(b),-sin(b),
-            0,sin(b),cos(b),
-          ]
-          let rotCameraGamma = [
-            cos(c),0,-sin(c),
-            0,1,0,
-            sin(c),0,cos(c),
-          ]
-          let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
-          rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
-          let forward = multMatrixVec3(rotCamera,[0,0,-1]);
-          let up = multMatrixVec3(rotCamera,[0,1,0]);
-          this.forward = {
-            x : forward[0],
-            y : forward[1],
-            z : forward[2],
-          }
-          this.up = {
-            x : up[0],
-            y : up[1],
-            z : up[2],
-          }
-
-          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
-          gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
-        },
-      }
       const texFav = new Texture("resource/fav.png",0);
       const texFavNorm = new Texture("resource/NormalMap.png",2);
       const texSkydome = new Texture("resource/skydome.png",1);
@@ -146,9 +84,9 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(0,0,0,30,0);
-        const cube2 = new Cube(0,0,0,1.00,0);
-        const cube3 = new Cube(0,0,6,0.80,0);
+        const cube = new Cube(0,0,0,30,1);
+        const cube2 = new Cube(1,0,0,1.00,0);
+        const cube3 = new Cube(0,0,6,0.80,2);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
         EntityManager.Add(cube3);
@@ -175,13 +113,9 @@ export default class Main{
     gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
   }
   static SendUniform(){
-    const vi = gl.getUniformLocation(program.id, "rotMatrix");
-    const vi3 = gl.getUniformLocation(program.id, "poMatrix");
     const vi2 = gl.getUniformLocation(program.id, "viewMatrix");
     const vi4 = gl.getUniformLocation(program.id, "projMatrix");
-    gl.uniformMatrix4fv(vi,false,Matrix.rotMatrix);
     gl.uniformMatrix4fv(vi2,false,Matrix.viewMatrix);
-    gl.uniformMatrix4fv(vi3,false,Matrix.poMatrix);
     gl.uniformMatrix4fv(vi4,false,Matrix.projMatrix);
   }
 }
@@ -193,11 +127,12 @@ onload = _=>{
     else if (this. mozRequestFullScreen) {
       this. mozRequestFullScreen();
     }
-    else {
-      alert("not found")
-    }
   };
   Main.Init();
 }
-//document.addEventListener("deviceorientation", function(event) {
+window.ondeviceorientation = function(event) {
+  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
+};
 

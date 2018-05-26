@@ -69,15 +69,17 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_indexBuffer_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_program_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cube_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GLObject_shader_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__matrix_js__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__entityManager_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__input_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_indexBuffer_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_program_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cube_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GLObject_shader_js__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__matrix_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__entityManager_js__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__input_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__camera_js__ = __webpack_require__(11);
+
 
 
 
@@ -90,41 +92,44 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 let gl,canvas,program;
 
-window.ondeviceorientation = function(event) {
-  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = event.beta * 2*Math.PI/360;//x
-  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
-};
 
 class Main{
   static Init(){
     this.holeRadius = 0.1;
+    this.camera = new __WEBPACK_IMPORTED_MODULE_9__camera_js__["a" /* default */]();
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
 
-    this.Boot().then(Main.Render);
+    this.Boot().then(Main.Run);
+  }
+  static Run(){
+    Main.Update();
+    Main.Render();
+    requestAnimationFrame(Main.Run);
+  }
+  static Update(){
+    Main.camera.Update(program);
+    //debug
+    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
+    __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Update();
+    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Update(program);
+    //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
+    Main.timer+=1;
   }
   static Render(){
-    Main.camera.Update();
-    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(program.id);
-    __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Update();
     Main.SendUniform();
 
-    //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
 
-    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Draw();
+    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Draw(program);
 
     gl.flush();
-
-    Main.timer+=1;
-    requestAnimationFrame(Main.Render);
   }
   static Boot(){
     return new Promise(res=>{
@@ -136,72 +141,6 @@ class Main{
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
-      this.camera = {
-        pos : vec3(0,0,-3.00),//座標
-        up : vec3(0,0,1),//カメラの上方向
-        alpha : 0,//カメラのz軸方向の回転?
-        beta : 0,//カメラのx軸方向の回転?
-        gamma : 0,//カメラのy軸方向の回転?
-        Update : function(){
-          //カメラ関連
-          let eye = [
-            this.pos.x,
-            this.pos.y,
-            this.pos.z,
-          ];
-
-
-          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(88))this.alpha += 0.02;
-          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(90))this.alpha -= 0.02;
-          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(38))this.beta -= 0.02;
-          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(40))this.beta += 0.02;
-          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(37))this.gamma += 0.02;
-          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(39))this.gamma -= 0.02;
-
-          if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
-          if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
-          if(this.beta>Math.PI)this.beta -= 2*Math.PI;
-          if(this.beta<-Math.PI)this.beta += 2*Math.PI;
-          let b = -this.beta;// * 2*Math.PI/360;//x
-          let c = this.gamma//y;
-          let a = -this.alpha;// * 2*Math.PI/360;//z
-          if(c<0){
-            c+=Math.PI;
-            }
-          let rotCameraAlpha = [
-            cos(a),-sin(a),0,
-            sin(a),cos(a),0,
-            0,0,1,
-          ]
-          let rotCameraBeta = [
-            1,0,0,
-            0,cos(b),-sin(b),
-            0,sin(b),cos(b),
-          ]
-          let rotCameraGamma = [
-            cos(c),0,-sin(c),
-            0,1,0,
-            sin(c),0,cos(c),
-          ]
-          let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
-          rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
-          let forward = multMatrixVec3(rotCamera,[0,0,-1]);
-          let up = multMatrixVec3(rotCamera,[0,1,0]);
-          this.forward = {
-            x : forward[0],
-            y : forward[1],
-            z : forward[2],
-          }
-          this.up = {
-            x : up[0],
-            y : up[1],
-            z : up[2],
-          }
-
-          gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
-          gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
-        },
-      }
       const texFav = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
       const texFavNorm = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
       const texSkydome = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
@@ -226,9 +165,9 @@ class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,30);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,1.00);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,6,0.80);
+        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,30,1);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](1,0,0,1.00,0);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,6,0.80,2);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube3);
@@ -255,13 +194,9 @@ class Main{
     gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
   }
   static SendUniform(){
-    const vi = gl.getUniformLocation(program.id, "rotMatrix");
-    const vi3 = gl.getUniformLocation(program.id, "poMatrix");
     const vi2 = gl.getUniformLocation(program.id, "viewMatrix");
     const vi4 = gl.getUniformLocation(program.id, "projMatrix");
-    gl.uniformMatrix4fv(vi,false,__WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].rotMatrix);
     gl.uniformMatrix4fv(vi2,false,__WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].viewMatrix);
-    gl.uniformMatrix4fv(vi3,false,__WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].poMatrix);
     gl.uniformMatrix4fv(vi4,false,__WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].projMatrix);
   }
 }
@@ -275,18 +210,46 @@ onload = _=>{
     else if (this. mozRequestFullScreen) {
       this. mozRequestFullScreen();
     }
-    else {
-      alert("not found")
-    }
   };
   Main.Init();
 }
-//document.addEventListener("deviceorientation", function(event) {
+window.ondeviceorientation = function(event) {
+  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
+};
 
 
 
 /***/ }),
 /* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Input{
+  static Init(){
+    Input.keyList = new Array(256).fill(false);
+  }
+  static isKeyInput(keyCode){
+    return Input.keyList[keyCode];
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Input;
+
+
+document.onkeydown = e=>{
+  Input.keyList[e.keyCode] = true;
+  if(e.keyCode != 82)e.preventDefault();
+};
+document.onkeyup = e=>{
+  Input.keyList[e.keyCode] = false;
+};
+
+
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -306,7 +269,7 @@ class VertexBuffer{
 
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -331,7 +294,7 @@ class IndexBuffer{
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -351,19 +314,24 @@ class Program{
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_glObject_js__ = __webpack_require__(6);
 
-const polygonID = 0;
+
+let polygonID = 0;
 
 class Cube{
   constructor(x,y,z,e,textureID){
+    this.pos = vec3(x,y,z);
     this.textureID = textureID;
     this.polygonID = polygonID;
     polygonID += 6;
+    this.seed = rand3d(15);
+
     this.position = [
       //1
       0,0,0,//0
@@ -466,11 +434,62 @@ class Cube{
       //
     ];
   }
-  Draw(){
+  Update(program){
+    //拍動
+    let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
+    let s = this.Size(timer);
+    this.beat = [
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
+      0,0,0,1,
+    ];
+    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "beat");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
+    //回転
+    let yy = timer/(this.seed.y+50);
+    let rotY = [
+      cos(yy),0,-sin(yy),0,
+      0,1,0,0,
+      sin(yy),0,cos(yy),0,
+      0,0,0,1,
+    ];
+    let zz = timer/(this.seed.z+50);
+    let rotZ = [
+      cos(zz),-sin(zz),0,0,
+      sin(zz),cos(zz),0,0,
+      0,0,1,0,
+      0,0,0,1,
+    ];
+    let xx = timer/(this.seed.x+50);
+    let rotX = [
+      1,0,0,0,
+      0,cos(xx),-sin(xx),0,
+      0,sin(xx),cos(xx),0,
+      0,0,0,1,
+    ];
+    this.rotMatrix = multMatrix(rotY,rotZ);
+    this.rotMatrix = multMatrix(this.rotMatrix,rotX);
+  }
+  Draw(program){
+    //座標変換
+    let center = [this.pos.x,this.pos.y,this.pos.z];
+    const loc0 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "center");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform3fv(loc0,center);
+
+    const loc2 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "rotMatrix");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
+
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"texnum"),this.textureID);
     for(let i=this.polygonID;i<this.polygonID+6;i++){
       __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.drawArrays(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.TRIANGLE_STRIP,4*i,4);
     }
+  }
+  Size(t){
+    let k = t%60;
+    if(k < 5)k= 0.6/(k+3);
+    else k =0;
+    return 1-k;
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Cube;
@@ -478,7 +497,25 @@ class Cube{
 
 
 /***/ }),
-/* 5 */
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class GLObject{
+  static Init(gl){
+    this.gl = gl;
+    this.programList = [];
+  }
+  static Add(program){
+    this.programList.push(program);
+  }
+}
+/* unused harmony export default */
+
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -518,7 +555,7 @@ class Shader{
 
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -530,18 +567,12 @@ class Matrix{
     this.rotMatrix = [];
     this.projMatrix = [];
   }
-  static Size(t){
-    let k = t%60;
-    if(k < 5)k= 0.6/(k+3);
-    else k =0;
-    return 1-k;
-  }
   static Update(){
+    this.viewMatrix = this.LookAt(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.pos,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.forward,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.up);
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
-    let s = this.Size(timer);
     const near = 0.0;
-    const far = 1000;
-    const t = 1;//画角
+    const far = 6
+    const t = 0.8;//画角
     const asp = 1;//アスペクト日
     this.projMatrix = [
       1 / (asp * t),0,0,0,
@@ -549,33 +580,6 @@ class Matrix{
       0,0,(near+far) / (near-far), -1,
       0,0,2*near*far/(near-far),0.001
     ];
-    this.poMatrix = [
-      s,0,0,0,
-      0,s,0,0,
-      0,0,s,0,
-      0,0,0,1,
-    ]
-    let rot1 = [
-      cos(timer/57),0,-sin(timer/57),0,
-      0,1,0,0,
-      sin(timer/57),0,cos(timer/57),0,
-      0,0,0,1,
-    ];
-    let e1 = [
-      cos(timer/71),-sin(timer/71),0,0,
-      sin(timer/71),cos(timer/71),0,0,
-      0,0,1,0,
-      0,0,0,1,
-    ];
-    let e2 = [
-      1,0,0,0,
-      0,cos(timer/41),-sin(timer/41),0,
-      0,sin(timer/41),cos(timer/41),0,
-      0,0,0,1,
-    ];
-    this.viewMatrix = this.LookAt(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.pos,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.forward,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.up);
-    let po = multMatrix(e1,e2);
-    this.rotMatrix = multMatrix(rot1,po);
   }
   static LookAt(eye,forward,up){
     const side = normalize(cross(forward,up));
@@ -593,7 +597,7 @@ class Matrix{
 
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -622,7 +626,7 @@ class Texture{
 
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -633,8 +637,11 @@ class EntityManager{
   static Add(e){
     this.list.push(e);
   }
-  static Draw(){
-    this.list.forEach(e=>e.Draw());
+  static Update(program){
+    this.list.forEach(e=>e.Update(program));
+  }
+  static Draw(program){
+    this.list.forEach(e=>e.Draw(program));
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = EntityManager;
@@ -642,29 +649,86 @@ class EntityManager{
 
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-class Input{
-  static Init(){
-    Input.keyList = new Array(256).fill(false);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_js__ = __webpack_require__(1);
+
+
+class Camera{
+  constructor(){
+    this.pos = vec3(0,0,-9.00),//座標
+    this.up = vec3(0,0,1),//カメラの上方向
+    this.alpha = 0;//カメラのz軸方向の回転?
+    this.beta = 0;//カメラのx軸方向の回転?
+    this.gamma = 0;//カメラのy軸方向の回転?
   }
-  static isKeyInput(keyCode){
-    return Input.keyList[keyCode];
+  Update(program){
+    const gl = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl;
+    //カメラ関連
+    let eye = [
+      this.pos.x,
+      this.pos.y,
+      this.pos.z,
+    ];
+
+    //debug
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(88))this.alpha += 0.02;
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(90))this.alpha -= 0.02;
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(38))this.beta += 0.02;
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(40))this.beta -= 0.02;
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(37))this.gamma += 0.02;
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(39))this.gamma -= 0.02;
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(32)){
+      this.pos = adv(this.pos,this.forward);
+    }
+    if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(70)){
+      this.pos = subv(this.pos,this.forward);
+    }
+    if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
+    if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
+    if(this.beta>Math.PI)this.beta -= 2*Math.PI;
+    if(this.beta<-Math.PI)this.beta += 2*Math.PI;
+    let b = this.beta;// * 2*Math.PI/360;//x
+    let c = this.gamma//y;
+    let a = this.alpha;// * 2*Math.PI/360;//z
+      let rotCameraAlpha = [
+        cos(a),-sin(a),0,
+        sin(a),cos(a),0,
+        0,0,1,
+      ]
+      let rotCameraBeta = [
+        1,0,0,
+        0,cos(b),-sin(b),
+        0,sin(b),cos(b),
+      ]
+      let rotCameraGamma = [
+        cos(c),0,-sin(c),
+        0,1,0,
+        sin(c),0,cos(c),
+      ]
+      let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
+    rotCamera = multMatrix3(rotCamera,rotCameraGamma);
+    let forward = multMatrixVec3(rotCamera,[0,0,-1]);
+    let up = multMatrixVec3(rotCamera,[0,1,0]);
+    this.forward = {
+      x : forward[0],
+      y : forward[1],
+      z : forward[2],
+    }
+    this.up = {
+      x : up[0],
+      y : up[1],
+      z : up[2],
+    }
+
+    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
+    gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
   }
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Input;
-
-
-document.onkeydown = e=>{
-  Input.keyList[e.keyCode] = true;
-  if(e.keyCode != 82)e.preventDefault();
-};
-document.onkeyup = e=>{
-  Input.keyList[e.keyCode] = false;
-};
-
+/* harmony export (immutable) */ __webpack_exports__["a"] = Camera;
 
 
 
