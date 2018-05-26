@@ -96,7 +96,7 @@ window.ondeviceorientation = function(event) {
 
 class Main{
   static Init(){
-    this.holeRadius = -0.3;
+    this.holeRadius = 0.1;
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
@@ -105,7 +105,7 @@ class Main{
   }
   static Render(){
     Main.camera.Update();
-    Main.param.innerHTML = `${Main.camera.alpha},${Main.camera.beta},${Main.camera.gamma}`;
+    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -113,7 +113,7 @@ class Main{
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Update();
     Main.SendUniform();
 
-    Main.holeRadius += 0.002*Math.sin(Main.timer/120);
+    //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
     //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
