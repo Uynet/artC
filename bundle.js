@@ -143,7 +143,7 @@ class Main{
       this.gl = gl;
       this.camera = {
         pos : vec3(0,0,-3.00),//座標
-        forward : vec3(0,0.0,-1),//カメラの向き
+        forward : vec3(0,0,-1),//カメラの向き
         up : vec3(0,1,0),//カメラの上方向
         alpha : 0,//カメラのz軸方向の回転?
         beta : 0,//カメラのx軸方向の回転?
@@ -155,6 +155,7 @@ class Main{
             this.pos.y,
             this.pos.z,
           ];
+          this.beta = 0.5;
           let a = this.alpha;// * 2*Math.PI/360;//z
           let b = this.beta;// * 2*Math.PI/360;//x
           let c = this.gamma;// * 2*Math.PI/360;//y
@@ -175,8 +176,8 @@ class Main{
           ]
           let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
           rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
-          let forward = multMatrixVec3(rotCamera,[this.forward.x,this.forward.y,this.forward.z]);
-          let up = multMatrixVec3(rotCamera,[this.up.x,this.up.y,this.up.z]);
+          let forward = multMatrixVec3(rotCamera,[0,0,-1]);
+          let up = multMatrixVec3(rotCamera,[0,1,0]);
           this.forward = {
             x : forward[0],
             y : forward[1],
