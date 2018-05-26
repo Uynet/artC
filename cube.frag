@@ -40,7 +40,8 @@ void main() {
     float b = holeRadius;
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
-    vec3 dist = rotCamera*normalize(vec3(uv2,-1.0));
+    //vec3 dist = rotCamera*normalize(vec3(uv2,-1.0));
+    vec3 dist = rotCamera*normalize(vec3(uv,-1.0));
     float theta = atan(dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;

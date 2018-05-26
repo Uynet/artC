@@ -90,7 +90,7 @@ let gl,canvas,program;
 
 window.ondeviceorientation = function(event) {
   Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.beta = -event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 
@@ -148,7 +148,6 @@ class Main{
       this.gl = gl;
       this.camera = {
         pos : vec3(0,0,-3.00),//座標
-        forward : vec3(0,1,0),//カメラの向き
         up : vec3(0,0,1),//カメラの上方向
         alpha : 0,//カメラのz軸方向の回転?
         beta : 0,//カメラのx軸方向の回転?
@@ -160,8 +159,9 @@ class Main{
             this.pos.y,
             this.pos.z,
           ];
-          let a = -this.alpha;// * 2*Math.PI/360;//z
-          let b = -this.beta;// * 2*Math.PI/360;//x
+          this.gamma += 0.01;
+          let a = this.alpha;// * 2*Math.PI/360;//z
+          let b = this.beta;// * 2*Math.PI/360;//x
           let c = this.gamma;// * 2*Math.PI/360;//y
           let rotCameraAlpha = [
             cos(a),-sin(a),0,
@@ -223,7 +223,7 @@ class Main{
 
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,30);
         const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,1.00);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,1,0.80);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,6,0.80);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube2);
 
