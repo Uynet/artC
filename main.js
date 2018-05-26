@@ -38,21 +38,8 @@ export default class Main{
 
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
-    //空
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
-    for(let i=0;i<6;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
-    //鳥
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=6;i<12;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
-    //鳥2
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=12;i<18;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
+
+    EntityManager.Draw(program);
 
     gl.flush();
 
@@ -159,11 +146,12 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(0,0,0,30);
-        const cube2 = new Cube(0,0,0,1.00);
-        const cube3 = new Cube(0,0,6,0.80);
+        const cube = new Cube(0,0,0,30,0);
+        const cube2 = new Cube(0,0,0,1.00,0);
+        const cube3 = new Cube(0,0,6,0.80,0);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
+        EntityManager.Add(cube3);
 
         const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position).concat(cube3.position))
         const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal).concat(cube3.normal))
@@ -197,6 +185,19 @@ export default class Main{
     gl.uniformMatrix4fv(vi4,false,Matrix.projMatrix);
   }
 }
-onload =   Main.Init();
+onload = _=>{
+  document.body.onclick = function() {
+    if (this.webkitRequestFullScreen) {
+      this.webkitRequestFullScreen();
+    }
+    else if (this. mozRequestFullScreen) {
+      this. mozRequestFullScreen();
+    }
+    else {
+      alert("not found")
+    }
+  };
+  Main.Init();
+}
 //document.addEventListener("deviceorientation", function(event) {
 

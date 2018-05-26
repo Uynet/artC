@@ -1,5 +1,12 @@
+import Main from "./main.js";
+import GLObject from "./GLObject/glObject.js";
+let polygonID = 0;
+
 export default class Cube{
-  constructor(x,y,z,e){
+  constructor(x,y,z,e,textureID){
+    this.textureID = textureID;
+    this.polygonID = polygonID;
+    polygonID += 6;
     this.position = [
       //1
       0,0,0,//0
@@ -102,35 +109,10 @@ export default class Cube{
       //
     ];
   }
+  Draw(program){
+    Main.gl.uniform1i(Main.gl.getUniformLocation(program.id,"texnum"),this.textureID);
+    for(let i=this.polygonID;i<this.polygonID+6;i++){
+      Main.gl.drawArrays(Main.gl.TRIANGLE_STRIP,4*i,4);
+    }
+  }
 }
-/*
-      0.0, 0.0,
-      1/4, 0.0,
-      2/4, 1/4,
-      3/4, 1/4,
-
-      0.0, 2/4,
-      1/4, 2/4,
-      2/4, 3/4,
-      3/4, 3/4,
-
-      0.0, 0.0,
-      1/4, 0.0,
-      0.0, 2/4,
-      1/4, 2/4,
-
-      2/4, 1/4,
-      3/4, 1/4,
-      2/4, 3/4,
-      3/4, 3/4,
-
-      0.0, 0.0,
-      2/4, 1/4,
-      0.0, 2/4,
-      2/4, 3/4,
-
-      1/4, 0.0,
-      3/4, 1/4,
-      1/4, 2/4,
-      3/4, 3/4,
-      */

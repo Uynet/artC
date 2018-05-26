@@ -118,21 +118,8 @@ class Main{
 
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
-    //空
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
-    for(let i=0;i<6;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
-    //鳥
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=6;i<12;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
-    //鳥2
-    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
-    for(let i=12;i<18;i++){
-      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
-    }
+
+    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Draw();
 
     gl.flush();
 
@@ -175,9 +162,9 @@ class Main{
           if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
           if(this.beta>Math.PI)this.beta -= 2*Math.PI;
           if(this.beta<-Math.PI)this.beta += 2*Math.PI;
-          let a = -this.alpha;// * 2*Math.PI/360;//z
           let b = -this.beta;// * 2*Math.PI/360;//x
-          let c = this.gamma;
+          let c = this.gamma//y;
+          let a = -this.alpha;// * 2*Math.PI/360;//z
           if(c<0){
             c+=Math.PI;
             }
@@ -199,7 +186,7 @@ class Main{
           let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
           rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
           let forward = multMatrixVec3(rotCamera,[0,0,-1]);
-          let up = multMatrixVec3(rotCamera,[0,-1,0]);
+          let up = multMatrixVec3(rotCamera,[0,1,0]);
           this.forward = {
             x : forward[0],
             y : forward[1],
@@ -244,6 +231,7 @@ class Main{
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,6,0.80);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube2);
+        __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube3);
 
         const positionBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.position.concat(cube2.position).concat(cube3.position))
         const normalBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.normal.concat(cube2.normal).concat(cube3.normal))
@@ -279,7 +267,20 @@ class Main{
 }
 /* harmony export (immutable) */ __webpack_exports__["default"] = Main;
 
-onload =   Main.Init();
+onload = _=>{
+  document.body.onclick = function() {
+    if (this.webkitRequestFullScreen) {
+      this.webkitRequestFullScreen();
+    }
+    else if (this. mozRequestFullScreen) {
+      this. mozRequestFullScreen();
+    }
+    else {
+      alert("not found")
+    }
+  };
+  Main.Init();
+}
 //document.addEventListener("deviceorientation", function(event) {
 
 
@@ -354,8 +355,15 @@ class Program{
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
+
+const polygonID = 0;
+
 class Cube{
-  constructor(x,y,z,e){
+  constructor(x,y,z,e,textureID){
+    this.textureID = textureID;
+    this.polygonID = polygonID;
+    polygonID += 6;
     this.position = [
       //1
       0,0,0,//0
@@ -458,40 +466,15 @@ class Cube{
       //
     ];
   }
+  Draw(){
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"texnum"),this.textureID);
+    for(let i=this.polygonID;i<this.polygonID+6;i++){
+      __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.drawArrays(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.TRIANGLE_STRIP,4*i,4);
+    }
+  }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Cube;
 
-/*
-      0.0, 0.0,
-      1/4, 0.0,
-      2/4, 1/4,
-      3/4, 1/4,
-
-      0.0, 2/4,
-      1/4, 2/4,
-      2/4, 3/4,
-      3/4, 3/4,
-
-      0.0, 0.0,
-      1/4, 0.0,
-      0.0, 2/4,
-      1/4, 2/4,
-
-      2/4, 1/4,
-      3/4, 1/4,
-      2/4, 3/4,
-      3/4, 3/4,
-
-      0.0, 0.0,
-      2/4, 1/4,
-      0.0, 2/4,
-      2/4, 3/4,
-
-      1/4, 0.0,
-      3/4, 1/4,
-      1/4, 2/4,
-      3/4, 3/4,
-      */
 
 
 /***/ }),
@@ -649,6 +632,9 @@ class EntityManager{
   }
   static Add(e){
     this.list.push(e);
+  }
+  static Draw(){
+    this.list.forEach(e=>e.Draw());
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = EntityManager;
