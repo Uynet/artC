@@ -76,6 +76,7 @@ export default class Main{
             this.pos.y,
             this.pos.z,
           ];
+          this.beta += 0.01;
           let a = this.alpha;// * 2*Math.PI/360;//z
           let b = this.beta;// * 2*Math.PI/360;//x
           let c = this.gamma;// * 2*Math.PI/360;//y
@@ -85,17 +86,17 @@ export default class Main{
             0,0,1,
           ]
           let rotCameraBeta = [
-            cos(b),0,-sin(b),
-            0,1,0,
-            sin(b),0,cos(b),
+            1,0,0,
+            0,cos(b),-sin(b),
+            0,sin(b),cos(b),
           ]
           let rotCameraGamma = [
-            1,0,0,
-            0,cos(c),-sin(c),
-            0,sin(c),cos(c),
+            cos(c),0,-sin(c),
+            0,1,0,
+            sin(c),0,cos(c),
           ]
-          let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
-          rotCamera = multMatrix3(rotCamera,rotCameraGamma);
+          let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
+          rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
           let forward = multMatrixVec3(rotCamera,[0,0,-1]);
           let up = multMatrixVec3(rotCamera,[0,1,0]);
           this.forward = {
