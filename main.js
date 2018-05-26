@@ -6,19 +6,21 @@ import Shader from "./GLObject/shader.js";
 import Matrix from "./matrix.js";
 import Texture from "./GLObject/Texture.js";
 import EntityManager from "./entityManager.js";
+import Input from "./input.js";
 
 let gl,canvas,program;
 
 window.ondeviceorientation = function(event) {
   Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = -event.beta * 2*Math.PI/360;//x
-  Main.camera.gamma = (event.gamma+Math.PI.2) * 2*Math.PI/360;//y
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 
 export default class Main{
   static Init(){
     this.holeRadius = 0.1;
     Matrix.Init();
+    Input.Init();
     EntityManager.Init();
     this.param = document.getElementById("poyo");
 
@@ -80,11 +82,25 @@ export default class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.gamma += 0.01;
-          if(this.gamma>Math.PI/2)this.gamma = -Math.PI/2;
-          let a = this.alpha;// * 2*Math.PI/360;//z
-          let b = this.beta;// * 2*Math.PI/360;//x
-          let c = this.gamma;// * 2*Math.PI/360;//y
+
+
+          if(Input.isKeyInput(88))this.alpha += 0.02;
+          if(Input.isKeyInput(90))this.alpha -= 0.02;
+          if(Input.isKeyInput(38))this.beta -= 0.02;
+          if(Input.isKeyInput(40))this.beta += 0.02;
+          if(Input.isKeyInput(37))this.gamma += 0.02;
+          if(Input.isKeyInput(39))this.gamma -= 0.02;
+
+          if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
+          if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
+          if(this.beta>Math.PI)this.beta -= 2*Math.PI;
+          if(this.beta<-Math.PI)this.beta += 2*Math.PI;
+          let b = -this.beta;// * 2*Math.PI/360;//x
+          let c = this.gamma//y;
+          let a = -this.alpha;// * 2*Math.PI/360;//z
+          if(c<0){
+            c+=Math.PI;
+            }
           let rotCameraAlpha = [
             cos(a),-sin(a),0,
             sin(a),cos(a),0,
@@ -102,8 +118,8 @@ export default class Main{
           ]
           let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
           rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
-          let forward = multMatrixVec3(rotCamera,[0,1,0]);
-          let up = multMatrixVec3(rotCamera,[0,0,1]);
+          let forward = multMatrixVec3(rotCamera,[0,0,-1]);
+          let up = multMatrixVec3(rotCamera,[0,1,0]);
           this.forward = {
             x : forward[0],
             y : forward[1],

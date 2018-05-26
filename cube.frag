@@ -43,7 +43,7 @@ void main() {
     //vec3 dist = rotCamera*normalize(vec3(uv2,-1.0));
     vec3 dist = rotCamera*normalize(vec3(uv,-1.0));
     float theta = atan(dist.z,dist.x);
-    float phi = atan(dist.y,length(dist.xz));
+    float phi = atan(-dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
     //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
     //ブラックホール

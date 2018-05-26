@@ -1,4 +1,4 @@
-class Input{
+export default class Input{
   static Init(){
     Input.keyList = new Array(256).fill(false);
   }
@@ -9,7 +9,7 @@ class Input{
 
 document.onkeydown = e=>{
   Input.keyList[e.keyCode] = true;
-  e.preventDefault();
+  if(e.keyCode != 82)e.preventDefault();
 };
 document.onkeyup = e=>{
   Input.keyList[e.keyCode] = false;

@@ -77,6 +77,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__matrix_js__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__entityManager_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__input_js__ = __webpack_require__(9);
+
 
 
 
@@ -90,7 +92,7 @@ let gl,canvas,program;
 
 window.ondeviceorientation = function(event) {
   Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = -event.beta * 2*Math.PI/360;//x
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 
@@ -98,6 +100,7 @@ class Main{
   static Init(){
     this.holeRadius = 0.1;
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Init();
+    __WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
 
@@ -159,10 +162,25 @@ class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.gamma += 0.01;
-          let a = this.alpha;// * 2*Math.PI/360;//z
-          let b = this.beta;// * 2*Math.PI/360;//x
-          let c = this.gamma;// * 2*Math.PI/360;//y
+
+
+          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(88))this.alpha += 0.02;
+          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(90))this.alpha -= 0.02;
+          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(38))this.beta -= 0.02;
+          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(40))this.beta += 0.02;
+          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(37))this.gamma += 0.02;
+          if(__WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].isKeyInput(39))this.gamma -= 0.02;
+
+          if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
+          if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
+          if(this.beta>Math.PI)this.beta -= 2*Math.PI;
+          if(this.beta<-Math.PI)this.beta += 2*Math.PI;
+          let a = -this.alpha;// * 2*Math.PI/360;//z
+          let b = -this.beta;// * 2*Math.PI/360;//x
+          let c = this.gamma;
+          if(c<0){
+            c+=Math.PI;
+            }
           let rotCameraAlpha = [
             cos(a),-sin(a),0,
             sin(a),cos(a),0,
@@ -180,8 +198,8 @@ class Main{
           ]
           let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
           rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
-          let forward = multMatrixVec3(rotCamera,[0,1,0]);
-          let up = multMatrixVec3(rotCamera,[0,0,1]);
+          let forward = multMatrixVec3(rotCamera,[0,0,-1]);
+          let up = multMatrixVec3(rotCamera,[0,-1,0]);
           this.forward = {
             x : forward[0],
             y : forward[1],
@@ -634,6 +652,33 @@ class EntityManager{
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = EntityManager;
+
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Input{
+  static Init(){
+    Input.keyList = new Array(256).fill(false);
+  }
+  static isKeyInput(keyCode){
+    return Input.keyList[keyCode];
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Input;
+
+
+document.onkeydown = e=>{
+  Input.keyList[e.keyCode] = true;
+  if(e.keyCode != 82)e.preventDefault();
+};
+document.onkeyup = e=>{
+  Input.keyList[e.keyCode] = false;
+};
+
 
 
 
