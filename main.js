@@ -46,6 +46,11 @@ export default class Main{
     for(let i=6;i<12;i++){
       gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
     }
+    //鳥2
+    gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),0);
+    for(let i=12;i<18;i++){
+      gl.drawArrays(gl.TRIANGLE_STRIP,4*i,4);
+    }
 
     gl.flush();
 
@@ -64,8 +69,8 @@ export default class Main{
       this.gl = gl;
       this.camera = {
         pos : vec3(0,0,-3.00),//座標
-        forward : vec3(0,0,-1),//カメラの向き
-        up : vec3(0,1,0),//カメラの上方向
+        forward : vec3(0,1,0),//カメラの向き
+        up : vec3(0,0,1),//カメラの上方向
         alpha : 0,//カメラのz軸方向の回転?
         beta : 0,//カメラのx軸方向の回転?
         gamma : 0,//カメラのy軸方向の回転?
@@ -76,9 +81,8 @@ export default class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.beta += 0.01;
-          let a = this.alpha;// * 2*Math.PI/360;//z
-          let b = this.beta;// * 2*Math.PI/360;//x
+          let a = -this.alpha;// * 2*Math.PI/360;//z
+          let b = -this.beta;// * 2*Math.PI/360;//x
           let c = this.gamma;// * 2*Math.PI/360;//y
           let rotCameraAlpha = [
             cos(a),-sin(a),0,
@@ -97,8 +101,8 @@ export default class Main{
           ]
           let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
           rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
-          let forward = multMatrixVec3(rotCamera,[0,0,-1]);
-          let up = multMatrixVec3(rotCamera,[0,1,0]);
+          let forward = multMatrixVec3(rotCamera,[0,1,0]);
+          let up = multMatrixVec3(rotCamera,[0,0,1]);
           this.forward = {
             x : forward[0],
             y : forward[1],
@@ -140,12 +144,13 @@ export default class Main{
 
         const cube = new Cube(0,0,0,30);
         const cube2 = new Cube(0,0,0,1.00);
+        const cube3 = new Cube(0,0,1,0.80);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
 
-        const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position))
-        const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal))
-        const texuvBuffer = new VertexBuffer(cube.texuv.concat(cube2.texuv))
+        const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position).concat(cube3.position))
+        const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal).concat(cube3.normal))
+        const texuvBuffer = new VertexBuffer(cube.texuv.concat(cube2.texuv).concat(cube3.texuv))
         this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
         this.SetAttribute(program.id,"position",3,positionBuffer.id);
         this.SetAttribute(program.id,"normal",3,normalBuffer.id);

@@ -38,19 +38,20 @@ void main() {
     float t = atan(uv.x,uv.y);
     float r3 = r-holeRadius;//半径
     float b = holeRadius;
-    float r2 = r3*r3/b;
-    vec2 uv2 = vec2(r2*sin(t),r2*cos(t));
+    float r2 = r;
+    vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
     vec3 dist = rotCamera*normalize(vec3(uv2,-1.0));
     float theta = atan(dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
     //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
-    /*ブラックホール
+    //ブラックホール
+    /*
     dist = rotCamera*normalize(vec3(uv,-1.0));
     theta = atan(dist.z,dist.x);
     phi = atan(dist.y,length(dist.xz));
-    if(length(r2)<holeRadius)color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
-    if(length(r2)<holeRadius*0.8)color = texture2D(mountainTex, vec2(3.0*theta/PI/2.01+0.5,3.0*phi/PI+0.5)).rgb;
+    if(length(uv2)<holeRadius)color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
+    if(length(uv2)<holeRadius*0.8)color = texture2D(mountainTex, vec2(3.0*theta/PI/2.01+0.5,3.0*phi/PI+0.5)).rgb;
     */
   }
   gl_FragColor = vec4(color,1.);
