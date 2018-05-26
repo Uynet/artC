@@ -11,6 +11,11 @@ import Camera from "./camera.js";
 
 let gl,canvas,program;
 
+window.ondeviceorientation = function(event) {
+  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
+};
 
 export default class Main{
   static Init(){
@@ -130,9 +135,4 @@ onload = _=>{
   };
   Main.Init();
 }
-window.ondeviceorientation = function(event) {
-  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = event.beta * 2*Math.PI/360;//x
-  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
-};
 

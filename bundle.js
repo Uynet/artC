@@ -92,6 +92,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 let gl,canvas,program;
 
+window.ondeviceorientation = function(event) {
+  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
+  Main.camera.beta = event.beta * 2*Math.PI/360;//x
+  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
+};
 
 class Main{
   static Init(){
@@ -213,11 +218,6 @@ onload = _=>{
   };
   Main.Init();
 }
-window.ondeviceorientation = function(event) {
-  Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
-  Main.camera.beta = event.beta * 2*Math.PI/360;//x
-  Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
-};
 
 
 
