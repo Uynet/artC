@@ -67,6 +67,18 @@ const multMatrix = (m1,m2)=>{
   }
   return m;
 }
+//3次元のみ　
+const multMatrix3 = (m1,m2)=>{
+  let m = new Array(9).fill(0);
+  for(let y=0;y<3;y++){
+    for(let x=0;x<3;x++){
+      for(let i = 0;i<3;i++){
+        m[3*y+x] += m1[3*y+i]*m2[3*i+x]; 
+      }
+    }
+  }
+  return m;
+}
 
 const multMatrixVec3 = (m1,v1)=>{
   let v = new Array(3).fill(0);
