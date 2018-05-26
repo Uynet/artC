@@ -96,7 +96,7 @@ window.ondeviceorientation = function(event) {
 
 class Main{
   static Init(){
-    this.holeRadius = 0.1;
+    this.holeRadius = -0.3;
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
@@ -105,7 +105,7 @@ class Main{
   }
   static Render(){
     Main.camera.Update();
-    Main.param.innerHTML = `{$Main.camera.alpha},{$Main.camera.beta},{$Main.camera.gamma}`;
+    Main.param.innerHTML = `${Main.camera.alpha},${Main.camera.beta},${Main.camera.gamma}`;
     gl.clearColor(0,0,0,1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -113,7 +113,7 @@ class Main{
     __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Update();
     Main.SendUniform();
 
-    //Main.holeRadius += 0.007*Math.sin(Main.timer/60);
+    Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
     //空
     gl.uniform1i(gl.getUniformLocation(program.id,"texnum"),1);
@@ -155,7 +155,6 @@ class Main{
             this.pos.y,
             this.pos.z,
           ];
-          this.beta = 0.5;
           let a = this.alpha;// * 2*Math.PI/360;//z
           let b = this.beta;// * 2*Math.PI/360;//x
           let c = this.gamma;// * 2*Math.PI/360;//y
@@ -174,8 +173,8 @@ class Main{
             0,cos(c),-sin(c),
             0,sin(c),cos(c),
           ]
-          let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
-          rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
+          let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
+          rotCamera = multMatrix3(rotCamera,rotCameraGamma);
           let forward = multMatrixVec3(rotCamera,[0,0,-1]);
           let up = multMatrixVec3(rotCamera,[0,1,0]);
           this.forward = {
