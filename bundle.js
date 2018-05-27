@@ -95,12 +95,12 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/1000;
-  Main.camera.acc.y = event.acceleration.y/1000;
-  Main.camera.acc.z = event.acceleration.z/1000;
-  if(event.acccelaration.x < 0.1) Main.camera.acc.x = 0;
-  if(event.acccelaration.y < 0.1) Main.camera.acc.y = 0;
-  if(event.acccelaration.z < 0.1) Main.camera.acc.z = 0;
+  Main.camera.acc.x = event.acceleration.x/100;
+  Main.camera.acc.y = event.acceleration.y/100;
+  Main.camera.acc.z = event.acceleration.z/100;
+  if(event.acccelaration.x < 1) Main.camera.acc.x = 0;
+  if(event.acccelaration.y < 1) Main.camera.acc.y = 0;
+  if(event.acccelaration.z < 1) Main.camera.acc.z = 0;
 };
 window.ontouchstart = function(e){
   let kirito = document.getElementById("kirito");
