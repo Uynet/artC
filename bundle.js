@@ -106,6 +106,9 @@ window.ontouchstart = function(e){
   let kirito = document.getElementById("kirito");
   kirito.innerHTML = e;
 }
+window.ontouchmove = e=>{
+  e.preventDefault;
+}
 
 class Main{
   static Init(){
@@ -146,13 +149,13 @@ class Main{
     return new Promise(res=>{
       this.timer = 0;
       canvas = document.getElementById("po");
-      canvas.width = screen.width;
-      canvas.height = screen.height;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       gl = canvas.getContext("webgl");
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
-      this.camvas = canvas;
+      this.canvas = canvas;
       const texFav = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
       const texFavNorm = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
       const texSkydome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
@@ -179,7 +182,7 @@ class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,0,program);
+        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,1,program);
         const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(1,0,0),1.00,0,program);
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,6),0.80,2,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
@@ -623,6 +626,7 @@ class Camera{
     this.alpha = 0;//カメラのz軸方向の回転?
     this.beta = 0;//カメラのx軸方向の回転?
     this.gamma = 0;//カメラのy軸方向の回転?
+    this.asp = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.width/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.height;
   }
   Update(program){
     const gl = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl;
@@ -693,9 +697,9 @@ class Camera{
     const near = 0.0;
     const far = 6
     const t = 0.8;//画角
-    let asp = screen.width/screen.height;
+
     this.projMatrix = [
-      1 / (asp * t),0,0,0,
+      1 / (this.asp * t),0,0,0,
       0,1/t,0,0,
       0,0,(near+far) / (near-far), -1,
       0,0,2*near*far/(near-far),0.001

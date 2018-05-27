@@ -26,6 +26,9 @@ window.ontouchstart = function(e){
   let kirito = document.getElementById("kirito");
   kirito.innerHTML = e;
 }
+window.ontouchmove = e=>{
+  e.preventDefault;
+}
 
 export default class Main{
   static Init(){
@@ -66,13 +69,13 @@ export default class Main{
     return new Promise(res=>{
       this.timer = 0;
       canvas = document.getElementById("po");
-      canvas.width = screen.width;
-      canvas.height = screen.height;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
       gl = canvas.getContext("webgl");
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
-      this.camvas = canvas;
+      this.canvas = canvas;
       const texFav = new Texture("resource/fav.png",0);
       const texFavNorm = new Texture("resource/NormalMap.png",2);
       const texSkydome = new Texture("resource/skydome.png",1);
@@ -99,7 +102,7 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(vec3(0,0,0),30,0,program);
+        const cube = new Cube(vec3(0,0,0),30,1,program);
         const cube2 = new Cube(vec3(1,0,0),1.00,0,program);
         const cube3 = new Cube(vec3(0,0,6),0.80,2,program);
         EntityManager.Add(cube);

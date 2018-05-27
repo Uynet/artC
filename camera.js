@@ -10,6 +10,7 @@ export default class Camera{
     this.alpha = 0;//カメラのz軸方向の回転?
     this.beta = 0;//カメラのx軸方向の回転?
     this.gamma = 0;//カメラのy軸方向の回転?
+    this.asp = Main.canvas.width/Main.canvas.height;
   }
   Update(program){
     const gl = Main.gl;
@@ -80,9 +81,9 @@ export default class Camera{
     const near = 0.0;
     const far = 6
     const t = 0.8;//画角
-    let asp = screen.width/screen.height;
+
     this.projMatrix = [
-      1 / (asp * t),0,0,0,
+      1 / (this.asp * t),0,0,0,
       0,1/t,0,0,
       0,0,(near+far) / (near-far), -1,
       0,0,2*near*far/(near-far),0.001
