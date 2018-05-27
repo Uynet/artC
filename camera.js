@@ -1,5 +1,6 @@
 import Main from "./main.js";
 import Input from "./input.js";
+
 export default class Camera{
   constructor(){
     this.acc = vec3(0,0,0);
@@ -41,7 +42,7 @@ export default class Camera{
     if(this.beta<-Math.PI)this.beta += 2*Math.PI;
     let b = this.beta;//x
     let c = this.gamma//y;
-    let a = this.alpha;//z
+    let a = -this.alpha;//z
       let rotCameraAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
@@ -74,5 +75,35 @@ export default class Camera{
 
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+    //view and projection
+    this.Matrix(program);
+  }
+  Matrix(program){
+    this.viewMatrix = this.LookAt(this.pos,this.forward,this.up);
+    let timer = Main.timer;
+    const near = 0.0;
+    const far = 6
+    const t = 0.8;//画角
+    const asp = 1;//アスペクト日
+    this.projMatrix = [
+      1 / (asp * t),0,0,0,
+      0,1/t,0,0,
+      0,0,(near+far) / (near-far), -1,
+      0,0,2*near*far/(near-far),0.001
+    ];
+    const loc2 = Main.gl.getUniformLocation(program.id, "viewMatrix");
+    const loc3 = Main.gl.getUniformLocation(program.id, "projMatrix");
+    Main.gl.uniformMatrix4fv(loc2,false,this.viewMatrix);
+    Main.gl.uniformMatrix4fv(loc3,false,this.projMatrix);
+  }
+  LookAt(eye,forward,up){
+    const side = normalize(cross(forward,up));
+    up = normalize(cross(forward, side));
+    return [
+      side.x, up.x, forward.x, 0,
+      side.y, up.y, forward.y, 0,
+      side.z, up.z, forward.z, 0,
+      -dot(eye, side), -dot(eye, up), -dot(eye, forward), 1
+    ];
   }
 }

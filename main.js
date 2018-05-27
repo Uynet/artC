@@ -3,7 +3,6 @@ import IndexBuffer from "./GLObject/indexBuffer.js";
 import Program from "./GLObject/program.js";
 import Cube from "./cube.js";
 import Shader from "./GLObject/shader.js";
-import Matrix from "./matrix.js";
 import Texture from "./GLObject/Texture.js";
 import EntityManager from "./entityManager.js";
 import Input from "./input.js";
@@ -16,16 +15,15 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x;
-  Main.camera.acc.y = event.acceleration.y;
-  Main.camera.acc.z = event.acceleration.z;
+  Main.camera.acc.x = event.acceleration.x/10;
+  Main.camera.acc.y = event.acceleration.y/10;
+  Main.camera.acc.z = event.acceleration.z/10;
 };
 
 export default class Main{
   static Init(){
     this.holeRadius = 0.1;
     this.camera = new Camera();
-    Matrix.Init();
     Input.Init();
     EntityManager.Init();
     this.param = document.getElementById("poyo");
@@ -40,8 +38,7 @@ export default class Main{
   static Update(){
     Main.camera.Update(program);
     //debug
-    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
-    Matrix.Update();
+    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
     EntityManager.Update(program);
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     Main.timer+=1;
@@ -122,21 +119,9 @@ export default class Main{
     gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
   }
   static SendUniform(){
-    const vi2 = gl.getUniformLocation(program.id, "viewMatrix");
-    const vi4 = gl.getUniformLocation(program.id, "projMatrix");
-    gl.uniformMatrix4fv(vi2,false,Matrix.viewMatrix);
-    gl.uniformMatrix4fv(vi4,false,Matrix.projMatrix);
   }
 }
 onload = _=>{
-  document.body.onclick = function() {
-    if (this.webkitRequestFullScreen) {
-      this.webkitRequestFullScreen();
-    }
-    else if (this. mozRequestFullScreen) {
-      this. mozRequestFullScreen();
-    }
-  };
   Main.Init();
 }
 

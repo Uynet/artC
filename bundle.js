@@ -74,12 +74,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_program_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cube_js__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GLObject_shader_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__matrix_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__entityManager_js__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__input_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__camera_js__ = __webpack_require__(11);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__entityManager_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__input_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__camera_js__ = __webpack_require__(10);
 
 
 
@@ -97,18 +95,17 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x;
-  Main.camera.acc.y = event.acceleration.y;
-  Main.camera.acc.z = event.acceleration.z;
+  Main.camera.acc.x = event.acceleration.x/10;
+  Main.camera.acc.y = event.acceleration.y/10;
+  Main.camera.acc.z = event.acceleration.z/10;
 };
 
 class Main{
   static Init(){
     this.holeRadius = 0.1;
-    this.camera = new __WEBPACK_IMPORTED_MODULE_9__camera_js__["a" /* default */]();
-    __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Init();
-    __WEBPACK_IMPORTED_MODULE_8__input_js__["a" /* default */].Init();
-    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Init();
+    this.camera = new __WEBPACK_IMPORTED_MODULE_8__camera_js__["a" /* default */]();
+    __WEBPACK_IMPORTED_MODULE_7__input_js__["a" /* default */].Init();
+    __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
 
     this.Boot().then(Main.Run);
@@ -121,9 +118,8 @@ class Main{
   static Update(){
     Main.camera.Update(program);
     //debug
-    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}`;
-    __WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].Update();
-    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Update(program);
+    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
+    __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Update(program);
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     Main.timer+=1;
   }
@@ -136,7 +132,7 @@ class Main{
 
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
 
-    __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Draw(program);
+    __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Draw(program);
 
     gl.flush();
   }
@@ -150,10 +146,10 @@ class Main{
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
-      const texFav = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
-      const texFavNorm = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
-      const texSkydome = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
-      const texMountaindome = new __WEBPACK_IMPORTED_MODULE_6__GLObject_Texture_js__["a" /* default */]("resource/mountain.png",3);
+      const texFav = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
+      const texFavNorm = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
+      const texSkydome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
+      const texMountaindome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/mountain.png",3);
 
       this.SetShader().then(res);
     });
@@ -177,9 +173,9 @@ class Main{
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,30,1);
         const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](1,0,0,1.00,0);
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,6,0.80,2);
-        __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube);
-        __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube2);
-        __WEBPACK_IMPORTED_MODULE_7__entityManager_js__["a" /* default */].Add(cube3);
+        __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
+        __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
+        __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
 
         const positionBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.position.concat(cube2.position).concat(cube3.position))
         const normalBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.normal.concat(cube2.normal).concat(cube3.normal))
@@ -203,23 +199,11 @@ class Main{
     gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
   }
   static SendUniform(){
-    const vi2 = gl.getUniformLocation(program.id, "viewMatrix");
-    const vi4 = gl.getUniformLocation(program.id, "projMatrix");
-    gl.uniformMatrix4fv(vi2,false,__WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].viewMatrix);
-    gl.uniformMatrix4fv(vi4,false,__WEBPACK_IMPORTED_MODULE_5__matrix_js__["a" /* default */].projMatrix);
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["default"] = Main;
 
 onload = _=>{
-  document.body.onclick = function() {
-    if (this.webkitRequestFullScreen) {
-      this.webkitRequestFullScreen();
-    }
-    else if (this. mozRequestFullScreen) {
-      this. mozRequestFullScreen();
-    }
-  };
   Main.Init();
 }
 
@@ -565,48 +549,6 @@ class Shader{
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
 
-class Matrix{
-  static Init(){
-    this.viewMatrix = [];
-    this.rotMatrix = [];
-    this.projMatrix = [];
-  }
-  static Update(){
-    this.viewMatrix = this.LookAt(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.pos,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.forward,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.up);
-    let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
-    const near = 0.0;
-    const far = 6
-    const t = 0.8;//画角
-    const asp = 1;//アスペクト日
-    this.projMatrix = [
-      1 / (asp * t),0,0,0,
-      0,1/t,0,0,
-      0,0,(near+far) / (near-far), -1,
-      0,0,2*near*far/(near-far),0.001
-    ];
-  }
-  static LookAt(eye,forward,up){
-    const side = normalize(cross(forward,up));
-    up = normalize(cross(forward, side));
-    return [
-      side.x, up.x, forward.x, 0,
-      side.y, up.y, forward.y, 0,
-      side.z, up.z, forward.z, 0,
-      -dot(eye, side), -dot(eye, up), -dot(eye, forward), 1
-    ];
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Matrix;
-
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
-
 const id = 0;
 
 class Texture{
@@ -630,7 +572,7 @@ class Texture{
 
 
 /***/ }),
-/* 10 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -653,12 +595,13 @@ class EntityManager{
 
 
 /***/ }),
-/* 11 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_js__ = __webpack_require__(1);
+
 
 
 class Camera{
@@ -702,7 +645,7 @@ class Camera{
     if(this.beta<-Math.PI)this.beta += 2*Math.PI;
     let b = this.beta;//x
     let c = this.gamma//y;
-    let a = this.alpha;//z
+    let a = -this.alpha;//z
       let rotCameraAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
@@ -735,6 +678,36 @@ class Camera{
 
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+    //view and projection
+    this.Matrix(program);
+  }
+  Matrix(program){
+    this.viewMatrix = this.LookAt(this.pos,this.forward,this.up);
+    let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
+    const near = 0.0;
+    const far = 6
+    const t = 0.8;//画角
+    const asp = 1;//アスペクト日
+    this.projMatrix = [
+      1 / (asp * t),0,0,0,
+      0,1/t,0,0,
+      0,0,(near+far) / (near-far), -1,
+      0,0,2*near*far/(near-far),0.001
+    ];
+    const loc2 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "viewMatrix");
+    const loc3 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "projMatrix");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.viewMatrix);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc3,false,this.projMatrix);
+  }
+  LookAt(eye,forward,up){
+    const side = normalize(cross(forward,up));
+    up = normalize(cross(forward, side));
+    return [
+      side.x, up.x, forward.x, 0,
+      side.y, up.y, forward.y, 0,
+      side.z, up.z, forward.z, 0,
+      -dot(eye, side), -dot(eye, up), -dot(eye, forward), 1
+    ];
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Camera;
