@@ -665,7 +665,7 @@ class Camera{
     }
     let b = this.beta;//x
     let c = this.gamma//y;
-    let a = this.alpha;//z
+    let a = -this.alpha;//z
       let rotCameraAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
