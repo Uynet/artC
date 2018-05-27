@@ -10,11 +10,15 @@ import Input from "./input.js";
 import Camera from "./camera.js";
 
 let gl,canvas,program;
-
 window.ondeviceorientation = function(event) {
   Main.camera.alpha = event.alpha * 2*Math.PI/360;//z
   Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
+};
+window.ondevicemotion = function(event) {
+  Main.camera.acc.x = e.acceleration.x;
+  Main.camera.acc.y = e.acceleration.y;
+  Main.camera.acc.z = e.acceleration.z;
 };
 
 export default class Main{

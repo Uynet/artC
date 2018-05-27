@@ -2,6 +2,8 @@ import Main from "./main.js";
 import Input from "./input.js";
 export default class Camera{
   constructor(){
+    this.acc = vec3(0,0,0);
+    this.vel = vec3(0,0,0);
     this.pos = vec3(0,0,-9.00),//座標
     this.up = vec3(0,0,1),//カメラの上方向
     this.alpha = 0;//カメラのz軸方向の回転?
@@ -10,7 +12,10 @@ export default class Camera{
   }
   Update(program){
     const gl = Main.gl;
-    //カメラ関連
+
+    this.vel = adv(this.vel,this.acc);
+    this.pos = adv(this.pos,this.vel);
+
     let eye = [
       this.pos.x,
       this.pos.y,
@@ -34,9 +39,9 @@ export default class Camera{
     if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
     if(this.beta>Math.PI)this.beta -= 2*Math.PI;
     if(this.beta<-Math.PI)this.beta += 2*Math.PI;
-    let b = this.beta;// * 2*Math.PI/360;//x
+    let b = this.beta;//x
     let c = this.gamma//y;
-    let a = this.alpha;// * 2*Math.PI/360;//z
+    let a = this.alpha;//z
       let rotCameraAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
@@ -52,8 +57,8 @@ export default class Camera{
         0,1,0,
         sin(c),0,cos(c),
       ]
-      let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
-    rotCamera = multMatrix3(rotCamera,rotCameraGamma);
+      let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
+    rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
     this.forward = {
