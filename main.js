@@ -26,6 +26,16 @@ window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
   let kirito = document.getElementById("kirito");
   kirito.innerHTML = touch.pageX;
+  if (this.webkitRequestFullScreen) {
+    this.webkitRequestFullScreen();
+  }
+  else if (this. mozRequestFullScreen) {
+    this. mozRequestFullScreen();
+  }
+  else {
+    alert("not found")
+  }
+
 }
 window.ontouchmove = e=>{
   e.preventDefault;
