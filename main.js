@@ -18,6 +18,9 @@ window.ondevicemotion = function(event) {
   Main.camera.acc.x = event.acceleration.x/10000;
   Main.camera.acc.y = event.acceleration.y/10000;
   Main.camera.acc.z = event.acceleration.z/10000;
+  if(event.acccelaration.x < 0.01) Main.camera.acc.x = 0;
+  if(event.acccelaration.y < 0.01) Main.camera.acc.y = 0;
+  if(event.acccelaration.z < 0.01) Main.camera.acc.z = 0;
 };
 
 export default class Main{
