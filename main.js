@@ -18,9 +18,9 @@ window.ondevicemotion = function(event) {
   Main.camera.acc.x = event.acceleration.x/100;
   Main.camera.acc.y = event.acceleration.y/100;
   Main.camera.acc.z = event.acceleration.z/100;
-  if(event.accceleration.x < 0.01) Main.camera.acc.x = 0;
-  if(event.accceleration.y < 0.01) Main.camera.acc.y = 0;
-  if(event.accceleration.z < 0.01) Main.camera.acc.z = 0;
+  if(event.acceleration.x < 1) Main.camera.acc.x = 0;
+  if(event.acceleration.y < 1) Main.camera.acc.y = 0;
+  if(event.acceleration.z < 1) Main.camera.acc.z = 0;
 };
 window.ontouchstart = function(e){
   let kirito = document.getElementById("kirito");
