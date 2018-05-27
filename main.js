@@ -14,6 +14,7 @@ window.ondeviceorientation = function(event) {
   Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
+/*
 window.ondevicemotion = function(event) {
   Main.camera.acc.x = event.acceleration.x/50;
   Main.camera.acc.y = event.acceleration.y/50;
@@ -22,6 +23,7 @@ window.ondevicemotion = function(event) {
   if(event.acceleration.y < 0.1) Main.camera.acc.y = 0;
   if(event.acceleration.z < 0.1) Main.camera.acc.z = 0;
 };
+*/
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
   let kirito = document.getElementById("kirito");

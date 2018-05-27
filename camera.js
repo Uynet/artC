@@ -67,9 +67,10 @@ export default class Camera{
     // agb
     // abg
     // bag
+    // bga
 
-    let rotCamera = multMatrix3(rotCameraBeta,rotCameraAlpha);
-    rotCamera = multMatrix3(rotCamera,rotCameraGamma);
+    let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
+    rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
