@@ -36,10 +36,6 @@ export default class Camera{
     if(Input.isKeyInput(70)){
       this.pos = subv(this.pos,this.forward);
     }
-    if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
-    if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
-    if(this.beta>Math.PI)this.beta -= 2*Math.PI;
-    if(this.beta<-Math.PI)this.beta += 2*Math.PI;
     let b = this.beta;//x
     let c = this.gamma//y;
     let a = -this.alpha;//z
@@ -84,7 +80,7 @@ export default class Camera{
     const near = 0.0;
     const far = 6
     const t = 0.8;//画角
-    const asp = 1;//アスペクト日
+    let asp = screen.width/screen.height;
     this.projMatrix = [
       1 / (asp * t),0,0,0,
       0,1/t,0,0,

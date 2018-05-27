@@ -17,7 +17,7 @@ void main() {
   vec2 uv = gl_FragCoord.xy/800.0;
   vec3 light = normalize(vec3(1,1,0));
   vec3 normal = vNorm;
-  float diff = dot(normal,light);//拡散光
+  float diff = max(0.0,dot(normal,light));//拡散光
   vec3 color;
   float PI = 3.14159265;
   if(texnum == 0) {

@@ -3,8 +3,8 @@ import GLObject from "./GLObject/glObject.js";
 let polygonID = 0;
 
 export default class Cube{
-  constructor(x,y,z,e,textureID){
-    this.pos = vec3(x,y,z);
+  constructor(pos,e,textureID,program){
+    this.pos = pos;
     this.textureID = textureID;
     this.polygonID = polygonID;
     polygonID += 6;
@@ -44,9 +44,9 @@ export default class Cube{
     ];
     this.position.forEach((p,i,a)=>{
       a[i]-=e/2;
-      if(i%3==0)a[i]+=x;
-      if(i%3==1)a[i]+=y;
-      if(i%3==2)a[i]+=z;
+      if(i%3==0)a[i]+=pos.x;
+      if(i%3==1)a[i]+=pos.y;
+      if(i%3==2)a[i]+=pos.z;
     });
     this.normal = [
       0,0,1,
@@ -111,6 +111,7 @@ export default class Cube{
       1.0,1.0,
       //
     ];
+
   }
   Update(program){
     //拍動

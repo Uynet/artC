@@ -15,18 +15,21 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/100;
-  Main.camera.acc.y = event.acceleration.y/100;
-  Main.camera.acc.z = event.acceleration.z/100;
-  if(event.acccelaration.x < 0.01) Main.camera.acc.x = 0;
-  if(event.acccelaration.y < 0.01) Main.camera.acc.y = 0;
-  if(event.acccelaration.z < 0.01) Main.camera.acc.z = 0;
+  Main.camera.acc.x = event.acceleration.x/1000;
+  Main.camera.acc.y = event.acceleration.y/1000;
+  Main.camera.acc.z = event.acceleration.z/1000;
+  if(event.acccelaration.x < 0.1) Main.camera.acc.x = 0;
+  if(event.acccelaration.y < 0.1) Main.camera.acc.y = 0;
+  if(event.acccelaration.z < 0.1) Main.camera.acc.z = 0;
 };
+window.ontouchstart = function(e){
+  let kirito = document.getElementById("kirito");
+  kirito.innerHTML = e;
+}
 
 export default class Main{
   static Init(){
     this.holeRadius = 0.1;
-    this.camera = new Camera();
     Input.Init();
     EntityManager.Init();
     this.param = document.getElementById("poyo");
@@ -63,16 +66,19 @@ export default class Main{
     return new Promise(res=>{
       this.timer = 0;
       canvas = document.getElementById("po");
-      canvas.width = 800;
-      canvas.height = 800;
+      canvas.width = screen.width;
+      canvas.height = screen.height;
       gl = canvas.getContext("webgl");
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
+      this.camvas = canvas;
       const texFav = new Texture("resource/fav.png",0);
       const texFavNorm = new Texture("resource/NormalMap.png",2);
       const texSkydome = new Texture("resource/skydome.png",1);
       const texMountaindome = new Texture("resource/mountain.png",3);
+
+      this.camera = new Camera();
 
       this.SetShader().then(res);
     });
@@ -93,9 +99,9 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(0,0,0,30,1);
-        const cube2 = new Cube(1,0,0,1.00,0);
-        const cube3 = new Cube(0,0,6,0.80,2);
+        const cube = new Cube(vec3(0,0,0),30,0,program);
+        const cube2 = new Cube(vec3(1,0,0),1.00,0,program);
+        const cube3 = new Cube(vec3(0,0,6),0.80,2,program);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
         EntityManager.Add(cube3);

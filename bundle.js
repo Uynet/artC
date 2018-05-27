@@ -95,18 +95,21 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/100;
-  Main.camera.acc.y = event.acceleration.y/100;
-  Main.camera.acc.z = event.acceleration.z/100;
-  if(event.acccelaration.x < 0.01) Main.camera.acc.x = 0;
-  if(event.acccelaration.y < 0.01) Main.camera.acc.y = 0;
-  if(event.acccelaration.z < 0.01) Main.camera.acc.z = 0;
+  Main.camera.acc.x = event.acceleration.x/1000;
+  Main.camera.acc.y = event.acceleration.y/1000;
+  Main.camera.acc.z = event.acceleration.z/1000;
+  if(event.acccelaration.x < 0.1) Main.camera.acc.x = 0;
+  if(event.acccelaration.y < 0.1) Main.camera.acc.y = 0;
+  if(event.acccelaration.z < 0.1) Main.camera.acc.z = 0;
 };
+window.ontouchstart = function(e){
+  let kirito = document.getElementById("kirito");
+  kirito.innerHTML = e;
+}
 
 class Main{
   static Init(){
     this.holeRadius = 0.1;
-    this.camera = new __WEBPACK_IMPORTED_MODULE_8__camera_js__["a" /* default */]();
     __WEBPACK_IMPORTED_MODULE_7__input_js__["a" /* default */].Init();
     __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Init();
     this.param = document.getElementById("poyo");
@@ -143,16 +146,19 @@ class Main{
     return new Promise(res=>{
       this.timer = 0;
       canvas = document.getElementById("po");
-      canvas.width = 800;
-      canvas.height = 800;
+      canvas.width = screen.width;
+      canvas.height = screen.height;
       gl = canvas.getContext("webgl");
       if(!gl)Main.param.innerHTML = "webGL対応してないよ";
 
       this.gl = gl;
+      this.camvas = canvas;
       const texFav = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
       const texFavNorm = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
       const texSkydome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
       const texMountaindome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/mountain.png",3);
+
+      this.camera = new __WEBPACK_IMPORTED_MODULE_8__camera_js__["a" /* default */]();
 
       this.SetShader().then(res);
     });
@@ -173,9 +179,9 @@ class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,0,30,1);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](1,0,0,1.00,0);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](0,0,6,0.80,2);
+        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,0,program);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(1,0,0),1.00,0,program);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,6),0.80,2,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
@@ -316,8 +322,8 @@ class Program{
 let polygonID = 0;
 
 class Cube{
-  constructor(x,y,z,e,textureID){
-    this.pos = vec3(x,y,z);
+  constructor(pos,e,textureID,program){
+    this.pos = pos;
     this.textureID = textureID;
     this.polygonID = polygonID;
     polygonID += 6;
@@ -357,9 +363,9 @@ class Cube{
     ];
     this.position.forEach((p,i,a)=>{
       a[i]-=e/2;
-      if(i%3==0)a[i]+=x;
-      if(i%3==1)a[i]+=y;
-      if(i%3==2)a[i]+=z;
+      if(i%3==0)a[i]+=pos.x;
+      if(i%3==1)a[i]+=pos.y;
+      if(i%3==2)a[i]+=pos.z;
     });
     this.normal = [
       0,0,1,
@@ -424,6 +430,7 @@ class Cube{
       1.0,1.0,
       //
     ];
+
   }
   Update(program){
     //拍動
@@ -642,10 +649,6 @@ class Camera{
     if(__WEBPACK_IMPORTED_MODULE_1__input_js__["a" /* default */].isKeyInput(70)){
       this.pos = subv(this.pos,this.forward);
     }
-    if(this.gamma>Math.PI/2)this.gamma -= Math.PI;
-    if(this.gamma<-Math.PI/2)this.gamma += Math.PI;
-    if(this.beta>Math.PI)this.beta -= 2*Math.PI;
-    if(this.beta<-Math.PI)this.beta += 2*Math.PI;
     let b = this.beta;//x
     let c = this.gamma//y;
     let a = -this.alpha;//z
@@ -690,7 +693,7 @@ class Camera{
     const near = 0.0;
     const far = 6
     const t = 0.8;//画角
-    const asp = 1;//アスペクト日
+    let asp = screen.width/screen.height;
     this.projMatrix = [
       1 / (asp * t),0,0,0,
       0,1/t,0,0,
