@@ -5,7 +5,7 @@ export default class Camera{
   constructor(){
     this.acc = vec3(0,0,0);
     this.vel = vec3(0,0,0);
-    this.pos = vec3(0,0,-9.00),//座標
+    this.pos = vec3(0,0,0),//座標
     this.up = vec3(0,0,1),//カメラの上方向
     this.alpha = 0;//カメラのz軸方向の回転?
     this.beta = 0;//カメラのx軸方向の回転?
@@ -42,7 +42,7 @@ export default class Camera{
     }
     let b = this.beta;//x
     let c = this.gamma//y;
-    let a = -this.alpha;//z
+    let a = this.alpha;//z
       let rotCameraAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
@@ -58,8 +58,9 @@ export default class Camera{
         0,1,0,
         sin(c),0,cos(c),
       ]
-      let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
+      let rotCamera = multMatrix3(rotCameraGamma,rotCameraBeta);
     rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
+    //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
     this.forward = {
@@ -75,6 +76,7 @@ export default class Camera{
 
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+    gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
     //view and projection
     this.Matrix(program);
   }

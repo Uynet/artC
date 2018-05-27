@@ -95,16 +95,17 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/100;
-  Main.camera.acc.y = event.acceleration.y/100;
-  Main.camera.acc.z = event.acceleration.z/100;
-  if(event.acceleration.x < 0.3) Main.camera.acc.x = 0;
-  if(event.acceleration.y < 0.3) Main.camera.acc.y = 0;
-  if(event.acceleration.z < 0.3) Main.camera.acc.z = 0;
+  Main.camera.acc.x = event.acceleration.x/50;
+  Main.camera.acc.y = event.acceleration.y/50;
+  Main.camera.acc.z = -event.acceleration.z/50;
+  if(event.acceleration.x < 0.1) Main.camera.acc.x = 0;
+  if(event.acceleration.y < 0.1) Main.camera.acc.y = 0;
+  if(event.acceleration.z < 0.1) Main.camera.acc.z = 0;
 };
 window.ontouchstart = function(e){
+  let touch = e.changedTouches[0];
   let kirito = document.getElementById("kirito");
-  kirito.innerHTML = e;
+  kirito.innerHTML = touch.pageX;
 }
 window.ontouchmove = e=>{
   e.preventDefault;
@@ -182,16 +183,20 @@ class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,1,program);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(1,0,0),1.00,0,program);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,6),0.80,2,program);
+        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,0,program);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,-12),1.00,0,program);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),1.00,0,program);
+        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,12),0.80,2,program);
+        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),0.80,2,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
+        __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube4);
+        __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube5);
 
-        const positionBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.position.concat(cube2.position).concat(cube3.position))
-        const normalBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.normal.concat(cube2.normal).concat(cube3.normal))
-        const texuvBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.texuv.concat(cube2.texuv).concat(cube3.texuv))
+        const positionBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.position.concat(cube2.position).concat(cube3.position).concat(cube4.position).concat(cube5.position));
+        const normalBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.normal.concat(cube2.normal).concat(cube3.normal).concat(cube4.position).concat(cube5.position));
+        const texuvBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.texuv.concat(cube2.texuv).concat(cube3.texuv).concat(cube4.texuv).concat(cube5.texuv));
         this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
         this.SetAttribute(program.id,"position",3,positionBuffer.id);
         this.SetAttribute(program.id,"normal",3,normalBuffer.id);
@@ -621,7 +626,7 @@ class Camera{
   constructor(){
     this.acc = vec3(0,0,0);
     this.vel = vec3(0,0,0);
-    this.pos = vec3(0,0,-9.00),//座標
+    this.pos = vec3(0,0,0),//座標
     this.up = vec3(0,0,1),//カメラの上方向
     this.alpha = 0;//カメラのz軸方向の回転?
     this.beta = 0;//カメラのx軸方向の回転?
@@ -658,7 +663,7 @@ class Camera{
     }
     let b = this.beta;//x
     let c = this.gamma//y;
-    let a = -this.alpha;//z
+    let a = this.alpha;//z
       let rotCameraAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
@@ -674,8 +679,9 @@ class Camera{
         0,1,0,
         sin(c),0,cos(c),
       ]
-      let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
+      let rotCamera = multMatrix3(rotCameraGamma,rotCameraBeta);
     rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
+    //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
     this.forward = {
@@ -691,6 +697,7 @@ class Camera{
 
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
+    gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
     //view and projection
     this.Matrix(program);
   }

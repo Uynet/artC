@@ -10,6 +10,7 @@ varying vec3 vPos;
 varying float z;
 uniform int texnum;
 uniform vec3 eye;
+uniform vec3 forward;
 uniform mat3 rotCamera;
 uniform float holeRadius;
 
@@ -22,8 +23,6 @@ void main() {
   float PI = 3.14159265;
   if(texnum == 0) {
     vec3 normalMap = texture2D(favTexNorm,vUV).rgb;//法線マップのデータ
-    normalMap.r *= 10.;
-    normalMap.g *= 10.;
     normal = normalize(vNorm + normalMap);
     color = mix(vec3(diff) , texture2D(favTex, vUV).rgb , 0.7);
     vec3 ref = normalize(reflect(eye-vPos,normalize(normal)));
@@ -41,10 +40,11 @@ void main() {
     float b = holeRadius;
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
-    vec3 dist = normalize(vec3(uv,-1.0))*rotCamera;
-    float theta = atan(dist.z,dist.x);
-    float phi = atan(-dist.y,length(dist.xz));
-    color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
+    vec3 dist = rotCamera*normalize(vec3(uv,-1.0));
+    float theta = atan(-dist.z,dist.x);
+    float phi = -atan(dist.y,length(dist.xz));
+    //color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/(PI+0.01)+0.5)).rgb;
+    color = vec3(theta/PI+0.5,-phi/PI+0.5,0.0);
     //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
     //ブラックホール
     /*
