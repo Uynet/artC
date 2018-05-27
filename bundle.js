@@ -692,8 +692,8 @@ class Camera{
     // bag
     // bga
 
-    let rotCamera = multMatrix3(rotCameraBeta,rotCameraGamma);
-    rotCamera = multMatrix3(rotCamera,rotCameraAlpha);
+    let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
+    rotCamera = multMatrix3(rotCamera,rotCameraGamma);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
