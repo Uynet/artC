@@ -16,6 +16,9 @@ export default class Camera{
     const gl = Main.gl;
 
     this.vel = adv(this.vel,this.acc);
+    this.vel.x *= 0.95;
+    this.vel.y *= 0.95;
+    this.vel.z *= 0.95;
     this.pos = adv(this.pos,this.vel);
 
     let eye = [

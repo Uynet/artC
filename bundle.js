@@ -98,9 +98,9 @@ window.ondevicemotion = function(event) {
   Main.camera.acc.x = event.acceleration.x/100;
   Main.camera.acc.y = event.acceleration.y/100;
   Main.camera.acc.z = event.acceleration.z/100;
-  if(event.acceleration.x < 1) Main.camera.acc.x = 0;
-  if(event.acceleration.y < 1) Main.camera.acc.y = 0;
-  if(event.acceleration.z < 1) Main.camera.acc.z = 0;
+  if(event.acceleration.x < 0.3) Main.camera.acc.x = 0;
+  if(event.acceleration.y < 0.3) Main.camera.acc.y = 0;
+  if(event.acceleration.z < 0.3) Main.camera.acc.z = 0;
 };
 window.ontouchstart = function(e){
   let kirito = document.getElementById("kirito");
@@ -632,6 +632,9 @@ class Camera{
     const gl = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl;
 
     this.vel = adv(this.vel,this.acc);
+    this.vel.x *= 0.95;
+    this.vel.y *= 0.95;
+    this.vel.z *= 0.95;
     this.pos = adv(this.pos,this.vel);
 
     let eye = [
