@@ -15,9 +15,9 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/10;
-  Main.camera.acc.y = event.acceleration.y/10;
-  Main.camera.acc.z = event.acceleration.z/10;
+  Main.camera.acc.x = event.acceleration.x/10000;
+  Main.camera.acc.y = event.acceleration.y/10000;
+  Main.camera.acc.z = event.acceleration.z/10000;
 };
 
 export default class Main{
