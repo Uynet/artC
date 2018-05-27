@@ -94,7 +94,6 @@ window.ondeviceorientation = function(event) {
   Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
-/*
 window.ondevicemotion = function(event) {
   Main.camera.acc.x = event.acceleration.x/50;
   Main.camera.acc.y = event.acceleration.y/50;
@@ -103,7 +102,6 @@ window.ondevicemotion = function(event) {
   if(event.acceleration.y < 0.1) Main.camera.acc.y = 0;
   if(event.acceleration.z < 0.1) Main.camera.acc.z = 0;
 };
-*/
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
   let kirito = document.getElementById("kirito");
@@ -188,8 +186,8 @@ class Main{
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,0,program);
         const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,-12),1.00,0,program);
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),1.00,0,program);
-        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,12),0.80,2,program);
-        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),0.80,2,program);
+        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,12),0.80,0,program);
+        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),0.80,0,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
@@ -639,10 +637,10 @@ class Camera{
     const gl = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl;
 
     this.vel = adv(this.vel,this.acc);
-    this.vel.x *= 0.95;
-    this.vel.y *= 0.95;
-    this.vel.z *= 0.95;
     this.pos = adv(this.pos,this.vel);
+    this.vel.x *= 0.15;
+    this.vel.y *= 0.15;
+    this.vel.z *= 0.15;
 
     let eye = [
       this.pos.x,
@@ -666,34 +664,24 @@ class Camera{
     let b = this.beta;//x
     let c = this.gamma//y;
     let a = -this.alpha;//z
-      let rotCameraAlpha = [
+      let rotAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
         0,0,1,
       ]
-      let rotCameraBeta = [
+      let rotBeta = [
         1,0,0,
         0,cos(b),-sin(b),
         0,sin(b),cos(b),
       ]
-      let rotCameraGamma = [
+      let rotGamma = [
         cos(c),0,-sin(c),
         0,1,0,
         sin(c),0,cos(c),
       ]
-    //beta  x
-    //gamm  y
-    //alpha z
-    //
-    // gba
-    // gab
-    // agb
-    // abg
-    // bag
-    // bga
 
-    let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
-    rotCamera = multMatrix3(rotCamera,rotCameraGamma);
+    let rotCamera = multMatrix3(rotAlpha,rotBeta);
+    rotCamera = multMatrix3(rotCamera,rotGamma);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
@@ -707,7 +695,12 @@ class Camera{
       y : up[1],
       z : up[2],
     }
-
+    let po = rotCamera;
+    rotCamera = [
+      po[0],po[3],po[6],
+      po[1],po[4],po[7],
+      po[2],po[5],po[8],
+    ];
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);

@@ -14,7 +14,6 @@ window.ondeviceorientation = function(event) {
   Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
-/*
 window.ondevicemotion = function(event) {
   Main.camera.acc.x = event.acceleration.x/50;
   Main.camera.acc.y = event.acceleration.y/50;
@@ -23,7 +22,6 @@ window.ondevicemotion = function(event) {
   if(event.acceleration.y < 0.1) Main.camera.acc.y = 0;
   if(event.acceleration.z < 0.1) Main.camera.acc.z = 0;
 };
-*/
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
   let kirito = document.getElementById("kirito");
@@ -108,8 +106,8 @@ export default class Main{
         const cube = new Cube(vec3(0,0,0),3000,0,program);
         const cube2 = new Cube(vec3(0,0,-12),1.00,0,program);
         const cube3 = new Cube(vec3(12,0,0),1.00,0,program);
-        const cube4 = new Cube(vec3(0,0,12),0.80,2,program);
-        const cube5 = new Cube(vec3(-12,0,0),0.80,2,program);
+        const cube4 = new Cube(vec3(0,0,12),0.80,0,program);
+        const cube5 = new Cube(vec3(-12,0,0),0.80,0,program);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
         EntityManager.Add(cube3);

@@ -21,8 +21,8 @@ void main(){
   vUV = uv;
   vec4 a = vec4(position,1.0);
   a -= vec4(center,0);
-  //a = a * rotMatrix;
+  //a = rotMatrix*a;
+  a *= beat;
   a += vec4(center,0);
-  //a *= beat;
   gl_Position = projMatrix * viewMatrix * a;
 }

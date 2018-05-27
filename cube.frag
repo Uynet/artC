@@ -18,18 +18,20 @@ void main() {
   vec2 uv = gl_FragCoord.xy/800.0;
   vec3 light = normalize(vec3(1,1,0));
   vec3 normal = vNorm;
-  float diff = max(0.0,dot(normal,light));//拡散光
   vec3 color;
   float PI = 3.14159265;
   if(texnum == 0) {
     vec3 normalMap = texture2D(favTexNorm,vUV).rgb;//法線マップのデータ
     normal = normalize(vNorm + normalMap);
+    float diff = max(0.0,dot(normal,light));//拡散光
     color = mix(vec3(diff) , texture2D(favTex, vUV).rgb , 0.7);
+    /*
     vec3 ref = normalize(reflect(eye-vPos,normalize(normal)));
     float theta = atan(ref.z,ref.x);
     float phi = atan(ref.y,length(ref.xz));
     vec3 refColor = texture2D(skyTex, vec2(theta/PI/2.+0.5,-phi/PI+0.5)).rgb*2.;
     color = mix(color,refColor,0.3)-0.3;
+    */
   }
   if(texnum == 1){
     uv -= 0.5;
@@ -40,11 +42,10 @@ void main() {
     float b = holeRadius;
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
-    vec3 dist = rotCamera*normalize(vec3(uv,-1.0));
+    vec3 dist = rotCamera * normalize(vec3(uv,-1.0));
     float theta = atan(-dist.z,dist.x);
-    float phi = -atan(dist.y,length(dist.xz));
-    //color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/(PI+0.01)+0.5)).rgb;
-    color = vec3(theta/PI+0.5,-phi/PI+0.5,0.0);
+    float phi = atan(dist.y,length(dist.xz));
+    color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,phi/(PI+0.01)+0.5)).rgb;
     //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
     //ブラックホール
     /*

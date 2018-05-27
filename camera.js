@@ -16,10 +16,10 @@ export default class Camera{
     const gl = Main.gl;
 
     this.vel = adv(this.vel,this.acc);
-    this.vel.x *= 0.95;
-    this.vel.y *= 0.95;
-    this.vel.z *= 0.95;
     this.pos = adv(this.pos,this.vel);
+    this.vel.x *= 0.15;
+    this.vel.y *= 0.15;
+    this.vel.z *= 0.15;
 
     let eye = [
       this.pos.x,
@@ -43,34 +43,24 @@ export default class Camera{
     let b = this.beta;//x
     let c = this.gamma//y;
     let a = -this.alpha;//z
-      let rotCameraAlpha = [
+      let rotAlpha = [
         cos(a),-sin(a),0,
         sin(a),cos(a),0,
         0,0,1,
       ]
-      let rotCameraBeta = [
+      let rotBeta = [
         1,0,0,
         0,cos(b),-sin(b),
         0,sin(b),cos(b),
       ]
-      let rotCameraGamma = [
+      let rotGamma = [
         cos(c),0,-sin(c),
         0,1,0,
         sin(c),0,cos(c),
       ]
-    //beta  x
-    //gamm  y
-    //alpha z
-    //
-    // gba
-    // gab
-    // agb
-    // abg
-    // bag
-    // bga
 
-    let rotCamera = multMatrix3(rotCameraAlpha,rotCameraBeta);
-    rotCamera = multMatrix3(rotCamera,rotCameraGamma);
+    let rotCamera = multMatrix3(rotAlpha,rotBeta);
+    rotCamera = multMatrix3(rotCamera,rotGamma);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
@@ -84,7 +74,12 @@ export default class Camera{
       y : up[1],
       z : up[2],
     }
-
+    let po = rotCamera;
+    rotCamera = [
+      po[0],po[3],po[6],
+      po[1],po[4],po[7],
+      po[2],po[5],po[8],
+    ];
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
