@@ -97,9 +97,9 @@ window.ondeviceorientation = function(event) {
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
 window.ondevicemotion = function(event) {
-  Main.camera.acc.x = e.acceleration.x;
-  Main.camera.acc.y = e.acceleration.y;
-  Main.camera.acc.z = e.acceleration.z;
+  Main.camera.acc.x = event.acceleration.x;
+  Main.camera.acc.y = event.acceleration.y;
+  Main.camera.acc.z = event.acceleration.z;
 };
 
 class Main{
