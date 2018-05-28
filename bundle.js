@@ -705,13 +705,24 @@ class Camera{
       z : up[2],
     }
     //整合性
-    let rotBetaVert = [
-      1,0,0,
-      0,cos(-2*b),-sin(-2*b),
-      0,sin(-2*b),cos(-2*b),
+    rotAlpha = [
+      cos(-a),sin(-a),0,
+      -sin(-a),cos(-a),0,
+      0,0,1,
     ]
-    rotCamera = multMatrix3(rotCamera,rotBetaVert);
-    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
+    rotBeta = [
+      1,0,0,
+      0,cos(b),sin(b),
+      0,-sin(b),cos(b),
+    ]
+    rotGamma = [
+      cos(-c),0,sin(-c),
+      0,1,0,
+      -sin(-c),0,cos(-c),
+    ]
+    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotAlpha"),false,rotAlpha);
+    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotBeta"),false,rotBeta);
+    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotGamma"),false,rotGamma);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
     //view and projection
