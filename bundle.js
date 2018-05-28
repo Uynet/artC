@@ -637,7 +637,9 @@ class Camera{
     this.acc = vec3(0,0,0);
     this.vel = vec3(0,0,0);
     this.pos = vec3(0,0,0),//座標
-    this.up = vec3(0,0,1),//カメラの上方向
+    this.forward = vec3(0,0,-1),//正面
+    this.up = vec3(0,1,0),//上
+    this.side = vec3(-1,0,0),//左
     this.alpha = 0;//カメラのz軸方向の回転?
     this.beta = 0;//カメラのx軸方向の回転?
     this.gamma = 0;//カメラのy軸方向の回転?
@@ -704,27 +706,14 @@ class Camera{
       y : up[1],
       z : up[2],
     }
+    this.side = cross(this.up,this.forward);
+    let side = [this.side.x,this.side.y,this.side.z]; 
+
     //整合性
-    rotAlpha = [
-      cos(-a),sin(-a),0,
-      -sin(-a),cos(-a),0,
-      0,0,1,
-    ]
-    rotBeta = [
-      1,0,0,
-      0,cos(b),sin(b),
-      0,-sin(b),cos(b),
-    ]
-    rotGamma = [
-      cos(-c),0,sin(-c),
-      0,1,0,
-      -sin(-c),0,cos(-c),
-    ]
-    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotAlpha"),false,rotAlpha);
-    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotBeta"),false,rotBeta);
-    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotGamma"),false,rotGamma);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
+    gl.uniform3fv(gl.getUniformLocation(program.id,"up"),up);
+    gl.uniform3fv(gl.getUniformLocation(program.id,"side"),side);
     //view and projection
     this.Matrix(program);
   }

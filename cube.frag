@@ -11,9 +11,8 @@ varying float z;
 uniform int texnum;
 uniform vec3 eye;
 uniform vec3 forward;
-uniform mat3 rotAlpha;
-uniform mat3 rotBeta;
-uniform mat3 rotGamma;
+uniform vec3 up;
+uniform vec3 side;
 
 
 uniform float holeRadius;
@@ -30,7 +29,7 @@ void main() {
     float diff = max(0.0,dot(normal,light));//拡散光
     color = mix(vec3(diff) , texture2D(favTex, vUV).rgb , 0.7);
     /*
-    vec3 ref = normalize(reflect(eye-vPos,normalize(normal)));
+    vec3 ref = normalize(reflect(sideeye-vPos,normalize(normal)));
     float theta = atan(ref.z,ref.x);
     float phi = atan(ref.y,length(ref.xz));
     vec3 refColor = texture2D(skyTex, vec2(theta/PI/2.+0.5,-phi/PI+0.5)).rgb*2.;
@@ -48,7 +47,7 @@ void main() {
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
     */
-    vec3 dist = rotAlpha*rotBeta*rotGamma * normalize(vec3(uv,-1.0));
+    vec3 dist = normalize(forward + uv.x*side + uv.y*up);
     float theta = atan(-dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
     color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/(PI+0.01)+0.5)).rgb;
