@@ -704,13 +704,14 @@ class Camera{
       y : up[1],
       z : up[2],
     }
-    let po = multMatrix3(rotAlpha,multMatrix3(rotBeta,rotGamma));
-    let aa  = [
-      po[0],po[3],po[6],
-      po[1],po[4],po[7],
-      po[2],po[5],po[8],
-    ];
-    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,aa);
+    //整合性
+    let rotBetaVert = [
+      1,0,0,
+      0,cos(-2*b),-sin(-2*b),
+      0,sin(-2*b),cos(-2*b),
+    ]
+    rotCamera = multMatrix3(rotCamera,rotBetaVert);
+    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
     //view and projection
