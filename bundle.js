@@ -69,14 +69,14 @@
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_indexBuffer_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_program_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cube_js__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GLObject_shader_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__entityManager_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__input_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__input_js__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__camera_js__ = __webpack_require__(10);
 
 
@@ -104,8 +104,13 @@ window.ondevicemotion = function(event) {
 };
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
-  let kirito = document.getElementById("kirito");
-  kirito.innerHTML = touch.pageX;
+  if (this.webkitRequestFullScreen) {
+    this.webkitRequestFullScreen();
+  }
+  else if (this. mozRequestFullScreen) {
+    this.mozRequestFullScreen();
+  }
+  cl(touch.pageX);
 }
 window.ontouchmove = e=>{
   e.preventDefault;
@@ -128,7 +133,7 @@ class Main{
   static Update(){
     Main.camera.Update(program);
     //debug
-    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
+    //Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
     __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Update(program);
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     Main.timer+=1;
@@ -138,7 +143,6 @@ class Main{
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(program.id);
-    Main.SendUniform();
 
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
 
@@ -194,13 +198,6 @@ class Main{
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube4);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube5);
 
-        const positionBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.position.concat(cube2.position).concat(cube3.position).concat(cube4.position).concat(cube5.position));
-        const normalBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.normal.concat(cube2.normal).concat(cube3.normal).concat(cube4.position).concat(cube5.position));
-        const texuvBuffer = new __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__["a" /* default */](cube.texuv.concat(cube2.texuv).concat(cube3.texuv).concat(cube4.texuv).concat(cube5.texuv));
-        this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
-        this.SetAttribute(program.id,"position",3,positionBuffer.id);
-        this.SetAttribute(program.id,"normal",3,normalBuffer.id);
-
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
         gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
         gl.uniform1i(gl.getUniformLocation(program.id,"favTexNorm"),2);
@@ -214,8 +211,7 @@ class Main{
     gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
     gl.enableVertexAttribArray(attributeLocation);
     gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
-  }
-  static SendUniform(){
+    gl.bindBuffer(gl.ARRAY_BUFFER,null);
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["default"] = Main;
@@ -228,6 +224,26 @@ onload = _=>{
 
 /***/ }),
 /* 1 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
+
+
+class VertexBuffer{
+  constructor(data){
+    this.id = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.createBuffer();
+    const gl = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl;
+    gl.bindBuffer(gl.ARRAY_BUFFER,this.id);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = VertexBuffer;
+
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -250,26 +266,6 @@ document.onkeyup = e=>{
   Input.keyList[e.keyCode] = false;
 };
 
-
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
-
-
-class VertexBuffer{
-  constructor(data){
-    this.id = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.createBuffer();
-    const gl = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl;
-    gl.bindBuffer(gl.ARRAY_BUFFER,this.id);
-    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data),gl.STATIC_DRAW);
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = VertexBuffer;
 
 
 
@@ -304,6 +300,8 @@ class IndexBuffer{
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__vertexBuffer_js__ = __webpack_require__(1);
+
 
 
 class Program{
@@ -325,6 +323,9 @@ class Program{
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_glObject_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__ = __webpack_require__(1);
+
+
 
 
 let polygonID = 0;
@@ -375,6 +376,7 @@ class Cube{
       if(i%3==1)a[i]+=pos.y;
       if(i%3==2)a[i]+=pos.z;
     });
+    this.positionBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.position);
     this.normal = [
       0,0,1,
       0,0,1,
@@ -406,6 +408,7 @@ class Cube{
       -1,0,0,
       -1,0,0,
     ]
+    this.normalBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.normal);
     this.texuv = [
       0.0,0.0,
       0.0,1.0,
@@ -438,6 +441,7 @@ class Cube{
       1.0,1.0,
       //
     ];
+    this.texuvBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.texuv);
 
   }
   Update(program){
@@ -450,7 +454,7 @@ class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "beat");
+    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"beat");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
     //回転
     let yy = timer/(this.seed.y+50);
@@ -477,7 +481,13 @@ class Cube{
     this.rotMatrix = multMatrix(rotY,rotZ);
     this.rotMatrix = multMatrix(this.rotMatrix,rotX);
   }
+  Bind(program){
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(program.id,"uv",2,this.texuvBuffer.id);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(program.id,"position",3,this.positionBuffer.id);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(program.id,"normal",3,this.normalBuffer.id);
+  }
   Draw(program){
+    this.Bind(program);
     //座標変換
     let center = [this.pos.x,this.pos.y,this.pos.z];
     const loc0 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "center");
@@ -487,7 +497,7 @@ class Cube{
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"texnum"),this.textureID);
-    for(let i=this.polygonID;i<this.polygonID+6;i++){
+    for(let i=0;i<6;i++){
       __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.drawArrays(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.TRIANGLE_STRIP,4*i,4);
     }
   }
@@ -618,7 +628,7 @@ class EntityManager{
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_js__ = __webpack_require__(2);
 
 
 

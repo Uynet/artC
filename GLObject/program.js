@@ -1,4 +1,5 @@
 import Main from "../main.js";
+import VertexBuffer from "./vertexBuffer.js";
 
 export default class Program{
   constructor(){

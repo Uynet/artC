@@ -24,18 +24,13 @@ window.ondevicemotion = function(event) {
 };
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
-  let kirito = document.getElementById("kirito");
-  kirito.innerHTML = touch.pageX;
   if (this.webkitRequestFullScreen) {
     this.webkitRequestFullScreen();
   }
   else if (this. mozRequestFullScreen) {
-    this. mozRequestFullScreen();
+    this.mozRequestFullScreen();
   }
-  else {
-    alert("not found")
-  }
-
+  cl(touch.pageX);
 }
 window.ontouchmove = e=>{
   e.preventDefault;
@@ -58,7 +53,7 @@ export default class Main{
   static Update(){
     Main.camera.Update(program);
     //debug
-    Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
+    //Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
     EntityManager.Update(program);
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     Main.timer+=1;
@@ -68,7 +63,6 @@ export default class Main{
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(program.id);
-    Main.SendUniform();
 
     gl.uniform1f(gl.getUniformLocation(program.id,"holeRadius"),Main.holeRadius);
 
@@ -124,13 +118,6 @@ export default class Main{
         EntityManager.Add(cube4);
         EntityManager.Add(cube5);
 
-        const positionBuffer = new VertexBuffer(cube.position.concat(cube2.position).concat(cube3.position).concat(cube4.position).concat(cube5.position));
-        const normalBuffer = new VertexBuffer(cube.normal.concat(cube2.normal).concat(cube3.normal).concat(cube4.position).concat(cube5.position));
-        const texuvBuffer = new VertexBuffer(cube.texuv.concat(cube2.texuv).concat(cube3.texuv).concat(cube4.texuv).concat(cube5.texuv));
-        this.SetAttribute(program.id,"uv",2,texuvBuffer.id);
-        this.SetAttribute(program.id,"position",3,positionBuffer.id);
-        this.SetAttribute(program.id,"normal",3,normalBuffer.id);
-
         gl.uniform1i(gl.getUniformLocation(program.id,"favTex"),0);
         gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
         gl.uniform1i(gl.getUniformLocation(program.id,"favTexNorm"),2);
@@ -144,8 +131,7 @@ export default class Main{
     gl.bindBuffer(gl.ARRAY_BUFFER,vbo);
     gl.enableVertexAttribArray(attributeLocation);
     gl.vertexAttribPointer(attributeLocation,stlide,gl.FLOAT,false,0,0)
-  }
-  static SendUniform(){
+    gl.bindBuffer(gl.ARRAY_BUFFER,null);
   }
 }
 onload = _=>{
