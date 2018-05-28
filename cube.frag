@@ -12,6 +12,8 @@ uniform int texnum;
 uniform vec3 eye;
 uniform vec3 forward;
 uniform mat3 rotCamera;
+
+
 uniform float holeRadius;
 
 void main() {
@@ -36,16 +38,18 @@ void main() {
   if(texnum == 1){
     uv -= 0.5;
     //極座標変換する
+    /*
     float r = length(uv);
-    float t = atan(uv.x,uv.y);
-    float r3 = r-holeRadius;//半径
+    float t = atan(uv.y,uv.x);
     float b = holeRadius;
+    float r3 = r-b;//半径
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
+    */
     vec3 dist = rotCamera * normalize(vec3(uv,-1.0));
     float theta = atan(-dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
-    color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,phi/(PI+0.01)+0.5)).rgb;
+    color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/(PI+0.01)+0.5)).rgb;
     //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
     //ブラックホール
     /*

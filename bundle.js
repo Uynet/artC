@@ -187,7 +187,7 @@ class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,0,program);
+        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,1,program);
         const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,-12),1.00,0,program);
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),1.00,0,program);
         const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,12),0.80,0,program);
@@ -690,8 +690,7 @@ class Camera{
         sin(c),0,cos(c),
       ]
 
-    let rotCamera = multMatrix3(rotAlpha,rotBeta);
-    rotCamera = multMatrix3(rotCamera,rotGamma);
+    let rotCamera = multMatrix3(multMatrix3(rotAlpha,rotBeta),rotGamma);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
@@ -705,13 +704,13 @@ class Camera{
       y : up[1],
       z : up[2],
     }
-    let po = rotCamera;
-    rotCamera = [
+    let po = multMatrix3(rotAlpha,multMatrix3(rotBeta,rotGamma));
+    let aa  = [
       po[0],po[3],po[6],
       po[1],po[4],po[7],
       po[2],po[5],po[8],
     ];
-    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
+    gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,aa);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
     //view and projection

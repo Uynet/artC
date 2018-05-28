@@ -59,8 +59,7 @@ export default class Camera{
         sin(c),0,cos(c),
       ]
 
-    let rotCamera = multMatrix3(rotAlpha,rotBeta);
-    rotCamera = multMatrix3(rotCamera,rotGamma);
+    let rotCamera = multMatrix3(multMatrix3(rotAlpha,rotBeta),rotGamma);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
@@ -74,12 +73,13 @@ export default class Camera{
       y : up[1],
       z : up[2],
     }
-    let po = rotCamera;
-    rotCamera = [
-      po[0],po[3],po[6],
-      po[1],po[4],po[7],
-      po[2],po[5],po[8],
-    ];
+    //整合性
+    let rotBetaVert = [
+      1,0,0,
+      0,cos(-2*b),-sin(-2*b),
+      0,sin(-2*b),cos(-2*b),
+    ]
+    rotCamera = multMatrix3(rotCamera,rotBetaVert);
     gl.uniformMatrix3fv(gl.getUniformLocation(program.id,"rotCamera"),false,rotCamera);
     gl.uniform3fv(gl.getUniformLocation(program.id,"eye"),eye);
     gl.uniform3fv(gl.getUniformLocation(program.id,"forward"),forward);
