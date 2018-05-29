@@ -355,9 +355,15 @@ class Cube{
     if(textureID == 1)this.state = State.open;
     this.size = 1;
 
-    this.grow = E4();
-    this.beat = E4();
-    this.rotMatrix = E4();
+    let E4 = [
+      1,0,0,0,
+      0,1,0,0,
+      0,0,1,0,
+      0,0,0,1,
+    ]
+    this.grow = E4;
+    this.beat = E4;
+    this.rotMatrix = E4;
 
     this.position = [
       //1
