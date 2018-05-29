@@ -168,6 +168,8 @@ export default class Cube{
         break;
       case State.open :
         break;
+      case State.shrink :
+        break;
       default : cl("po");
     }
   }
