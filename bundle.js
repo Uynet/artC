@@ -343,30 +343,6 @@ const State = {
   open : "open",
 }
 
-const rotX4 = (a)=>{
-  return [
-    1,0,0,0,
-    0,cos(a),-sin(a),0,
-    0,sin(a),cos(a),0,
-    0,0,0,1,
-  ]
-}
-const rotY4 = (a)=>{
-  return [
-    cos(a),0,-sin(a),0,
-    0,1,0,0,
-    sin(a),0,cos(a),0,
-    0,0,0,1,
-  ]
-}
-const rotZ4 = (a)=>{
-  return [
-    1,0,0,0,
-    0,cos(a),-sin(a),0,
-    0,sin(a),cos(a),0,
-    0,0,0,1,
-  ]
-}
 
 class Cube{
   constructor(pos,e,textureID,program){
@@ -496,12 +472,36 @@ class Cube{
     this.texuvBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.texuv);
 
   }
+  rotX4(a){
+    return [
+      1,0,0,0,
+      0,cos(a),-sin(a),0,
+      0,sin(a),cos(a),0,
+      0,0,0,1,
+    ];
+  }
+  rotY4(a){
+    return [
+      cos(a),0,-sin(a),0,
+      0,1,0,0,
+      sin(a),0,cos(a),0,
+      0,0,0,1,
+    ];
+  }
+  rotZ4(a){
+    return [
+      1,0,0,0,
+      0,cos(a),-sin(a),0,
+      0,sin(a),cos(a),0,
+      0,0,0,1,
+    ];
+  }
   Rot(){
     //回転
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
-    let rotX = rotX4(timer/(this.seed.x+50));
-    let rotY = rotY4(timer/(this.seed.y+50));
-    let rotZ = rotX4(timer/(this.seed.z+50));
+    let rotX = this.rotX4(timer/(this.seed.x+50));
+    let rotY = this.rotY4(timer/(this.seed.y+50));
+    let rotZ = this.rotX4(timer/(this.seed.z+50));
     this.rotMatrix = multMatrix(multMatrix(rotY,rotZ),rotX);
   }
   Beat(){
@@ -803,6 +803,7 @@ class Camera{
   RayCast(x,y){
     const u = x/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.width -0.5;
     const v = -(y/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.height -0.5);
+    cl(vec2(u,v));
     this.side = cross(this.up,this.forward);
     let side = mlv(u,this.side);
     let up = mlv(v,this.up);

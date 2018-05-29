@@ -10,30 +10,6 @@ const State = {
   open : "open",
 }
 
-const rotX4 = (a)=>{
-  return [
-    1,0,0,0,
-    0,cos(a),-sin(a),0,
-    0,sin(a),cos(a),0,
-    0,0,0,1,
-  ]
-}
-const rotY4 = (a)=>{
-  return [
-    cos(a),0,-sin(a),0,
-    0,1,0,0,
-    sin(a),0,cos(a),0,
-    0,0,0,1,
-  ]
-}
-const rotZ4 = (a)=>{
-  return [
-    1,0,0,0,
-    0,cos(a),-sin(a),0,
-    0,sin(a),cos(a),0,
-    0,0,0,1,
-  ]
-}
 
 export default class Cube{
   constructor(pos,e,textureID,program){
@@ -163,12 +139,36 @@ export default class Cube{
     this.texuvBuffer = new VertexBuffer(this.texuv);
 
   }
+  rotX4(a){
+    return [
+      1,0,0,0,
+      0,cos(a),-sin(a),0,
+      0,sin(a),cos(a),0,
+      0,0,0,1,
+    ];
+  }
+  rotY4(a){
+    return [
+      cos(a),0,-sin(a),0,
+      0,1,0,0,
+      sin(a),0,cos(a),0,
+      0,0,0,1,
+    ];
+  }
+  rotZ4(a){
+    return [
+      1,0,0,0,
+      0,cos(a),-sin(a),0,
+      0,sin(a),cos(a),0,
+      0,0,0,1,
+    ];
+  }
   Rot(){
     //回転
     let timer = Main.timer;
-    let rotX = rotX4(timer/(this.seed.x+50));
-    let rotY = rotY4(timer/(this.seed.y+50));
-    let rotZ = rotX4(timer/(this.seed.z+50));
+    let rotX = this.rotX4(timer/(this.seed.x+50));
+    let rotY = this.rotY4(timer/(this.seed.y+50));
+    let rotZ = this.rotX4(timer/(this.seed.z+50));
     this.rotMatrix = multMatrix(multMatrix(rotY,rotZ),rotX);
   }
   Beat(){
