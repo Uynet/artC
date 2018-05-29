@@ -91,7 +91,7 @@ export default class Camera{
     this.viewMatrix = this.LookAt(this.pos,this.forward,this.up);
     let timer = Main.timer;
     const near = 0.0;
-    const far = 6
+    const far = 6;
     const t = 0.8;//画角
 
     this.projMatrix = [
@@ -125,7 +125,7 @@ export default class Camera{
     let ray = normalize(adv(adv(this.forward,side),up));
     
     EntityManager.list.forEach(e=>{
-      if(dot(normalize(e.pos),ray)>0.97)cl("a");
+      if(dot(normalize(subv(e.pos,this.pos)),ray)<-0.97)e.Tap();
     });
   }
 }

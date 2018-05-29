@@ -171,8 +171,8 @@ class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,1,program);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-12,0),2.00,0,program);
+        const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,1,program);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-12,0),2.00,2,program);
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),2.00,0,program);
         const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,12,0),2.00,0,program);
         const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),2.00,0,program);
@@ -337,6 +337,12 @@ class Program{
 
 let polygonID = 0;
 
+const State = {
+  usual : "usual",
+  growing : "growing",
+  open : "open",
+}
+
 class Cube{
   constructor(pos,e,textureID,program){
     this.pos = pos;
@@ -345,6 +351,13 @@ class Cube{
     polygonID += 6;
     this.seed = rand3d(15);
     this.program = program;
+    this.state = State.usual;
+    if(textureID == 1)this.state = State.open;
+    this.size = 1;
+
+    this.grow = E4();
+    this.beat = E4();
+    this.rotMatrix = E4();
 
     this.position = [
       //1
@@ -455,21 +468,9 @@ class Cube{
   Rot(){
     //回転
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
-    let yy = timer/(this.seed.y+50);
-    let rotY = [
-      cos(yy),0,-sin(yy),0,
-      0,1,0,0,
-      sin(yy),0,cos(yy),0,
-      0,0,0,1,
-    ];
-    let zz = timer/(this.seed.z+50);
-    let rotZ = [
-      cos(zz),-sin(zz),0,0,
-      sin(zz),cos(zz),0,0,
-      0,0,1,0,
-      0,0,0,1,
-    ];
     let rotX = rotX4(timer/(this.seed.x+50));
+    let rotY = rotY4(timer/(this.seed.y+50));
+    let rotZ = rotX4(timer/(this.seed.z+50));
     this.rotMatrix = multMatrix(multMatrix(rotY,rotZ),rotX);
   }
   Beat(){
@@ -481,17 +482,46 @@ class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
+  }
+  Tap(){
+    cl(this.state);
+    switch(this.state){
+      case "usual" : this.state = "growing"; break;
+      case "growing" : this.state = "growing"; break;
+    }
   }
   Update(){
-    this.Beat();
-    this.Rot();
+    switch(this.state){
+      case State.usual :
+        this.Beat();
+        this.Rot();
+        break;
+      case State.growing :
+        this.Grow();
+        break;
+      case State.open :
+        break;
+      default : cl("po");
+    }
   }
   Bind(){
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"position",3,this.positionBuffer.id);
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"normal",3,this.normalBuffer.id);
+  }
+  Grow(){
+    let s = this.size;
+    this.grow =[
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
+      0,0,0,1,
+    ];
+    this.size *= 1.21;
+    if(this.size >= 30){
+      this.size = 30;
+      this.state = "open";
+    }
   }
   Draw(){
     this.Bind();
@@ -504,6 +534,11 @@ class Cube{
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"texnum"),this.textureID);
+    //拍動
+    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
+    const loc3 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"grow");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc3,false,this.grow);
     for(let i=0;i<6;i++){
       __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.drawArrays(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.TRIANGLE_STRIP,4*i,4);
     }
@@ -707,7 +742,7 @@ class Camera{
     this.viewMatrix = this.LookAt(this.pos,this.forward,this.up);
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
     const near = 0.0;
-    const far = 6
+    const far = 6;
     const t = 0.8;//画角
 
     this.projMatrix = [
@@ -741,7 +776,7 @@ class Camera{
     let ray = normalize(adv(adv(this.forward,side),up));
     
     __WEBPACK_IMPORTED_MODULE_2__entityManager_js__["a" /* default */].list.forEach(e=>{
-      if(dot(normalize(e.pos),ray)>0.97)cl("a");
+      if(dot(normalize(subv(e.pos,this.pos)),ray)<-0.97)e.Tap();
     });
   }
 }

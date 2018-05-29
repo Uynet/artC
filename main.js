@@ -91,8 +91,8 @@ export default class Main{
           console.log(gl.getProgramInfoLog(program.id))
         }
 
-        const cube = new Cube(vec3(0,0,0),3000,1,program);
-        const cube2 = new Cube(vec3(0,-12,0),2.00,0,program);
+        const cube = new Cube(vec3(0,0,0),30,1,program);
+        const cube2 = new Cube(vec3(0,-12,0),2.00,2,program);
         const cube3 = new Cube(vec3(12,0,0),2.00,0,program);
         const cube4 = new Cube(vec3(0,12,0),2.00,0,program);
         const cube5 = new Cube(vec3(-12,0,0),2.00,0,program);

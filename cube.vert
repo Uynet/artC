@@ -7,6 +7,7 @@ uniform mat4 rotMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 uniform mat4 beat;
+uniform mat4 grow;
 
 uniform vec3 center;
 
@@ -23,6 +24,7 @@ void main(){
   a -= vec4(center,0);
   a = rotMatrix*a;
   a *= beat;
+  a *= grow;
   a += vec4(center,0);
   gl_Position = projMatrix * viewMatrix * a;
 }

@@ -124,3 +124,27 @@ const rotX4 = (a)=>{
     0,0,0,1,
   ]
 }
+const rotY4 = (a)=>{
+  return [
+    cos(a),0,-sin(a),0,
+    0,1,0,0,
+    sin(a),0,cos(a),0,
+    0,0,0,1,
+  ]
+}
+const rotZ4 = (a)=>{
+  return [
+    1,0,0,0,
+    0,cos(a),-sin(a),0,
+    0,sin(a),cos(a),0,
+    0,0,0,1,
+  ]
+}
+const E4 = ()=>{
+  return [
+    1,0,0,0,
+    0,1,0,0,
+    0,0,1,0,
+    0,0,0,1,
+  ]
+}

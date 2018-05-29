@@ -4,6 +4,12 @@ import VertexBuffer from "./GLObject/vertexBuffer.js";
 
 let polygonID = 0;
 
+const State = {
+  usual : "usual",
+  growing : "growing",
+  open : "open",
+}
+
 export default class Cube{
   constructor(pos,e,textureID,program){
     this.pos = pos;
@@ -12,6 +18,13 @@ export default class Cube{
     polygonID += 6;
     this.seed = rand3d(15);
     this.program = program;
+    this.state = State.usual;
+    if(textureID == 1)this.state = State.open;
+    this.size = 1;
+
+    this.grow = E4();
+    this.beat = E4();
+    this.rotMatrix = E4();
 
     this.position = [
       //1
@@ -122,21 +135,9 @@ export default class Cube{
   Rot(){
     //回転
     let timer = Main.timer;
-    let yy = timer/(this.seed.y+50);
-    let rotY = [
-      cos(yy),0,-sin(yy),0,
-      0,1,0,0,
-      sin(yy),0,cos(yy),0,
-      0,0,0,1,
-    ];
-    let zz = timer/(this.seed.z+50);
-    let rotZ = [
-      cos(zz),-sin(zz),0,0,
-      sin(zz),cos(zz),0,0,
-      0,0,1,0,
-      0,0,0,1,
-    ];
     let rotX = rotX4(timer/(this.seed.x+50));
+    let rotY = rotY4(timer/(this.seed.y+50));
+    let rotZ = rotX4(timer/(this.seed.z+50));
     this.rotMatrix = multMatrix(multMatrix(rotY,rotZ),rotX);
   }
   Beat(){
@@ -148,17 +149,46 @@ export default class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
-    Main.gl.uniformMatrix4fv(loc1,false,this.beat);
+  }
+  Tap(){
+    cl(this.state);
+    switch(this.state){
+      case "usual" : this.state = "growing"; break;
+      case "growing" : this.state = "growing"; break;
+    }
   }
   Update(){
-    this.Beat();
-    this.Rot();
+    switch(this.state){
+      case State.usual :
+        this.Beat();
+        this.Rot();
+        break;
+      case State.growing :
+        this.Grow();
+        break;
+      case State.open :
+        break;
+      default : cl("po");
+    }
   }
   Bind(){
     Main.SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
     Main.SetAttribute(this.program.id,"position",3,this.positionBuffer.id);
     Main.SetAttribute(this.program.id,"normal",3,this.normalBuffer.id);
+  }
+  Grow(){
+    let s = this.size;
+    this.grow =[
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
+      0,0,0,1,
+    ];
+    this.size *= 1.21;
+    if(this.size >= 30){
+      this.size = 30;
+      this.state = "open";
+    }
   }
   Draw(){
     this.Bind();
@@ -171,6 +201,11 @@ export default class Cube{
     Main.gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
     Main.gl.uniform1i(Main.gl.getUniformLocation(this.program.id,"texnum"),this.textureID);
+    //拍動
+    const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
+    Main.gl.uniformMatrix4fv(loc1,false,this.beat);
+    const loc3 = Main.gl.getUniformLocation(this.program.id,"grow");
+    Main.gl.uniformMatrix4fv(loc3,false,this.grow);
     for(let i=0;i<6;i++){
       Main.gl.drawArrays(Main.gl.TRIANGLE_STRIP,4*i,4);
     }
