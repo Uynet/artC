@@ -14,22 +14,8 @@ window.ondeviceorientation = function(event) {
   Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
-window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/50;
-  Main.camera.acc.y = event.acceleration.y/50;
-  Main.camera.acc.z = -event.acceleration.z/50;
-  if(event.acceleration.x < 0.1) Main.camera.acc.x = 0;
-  if(event.acceleration.y < 0.1) Main.camera.acc.y = 0;
-  if(event.acceleration.z < 0.1) Main.camera.acc.z = 0;
-};
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
-  if (this.webkitRequestFullScreen) {
-    this.webkitRequestFullScreen();
-  }
-  else if (this. mozRequestFullScreen) {
-    this.mozRequestFullScreen();
-  }
   cl(touch.pageX);
 }
 window.ontouchmove = e=>{
@@ -52,8 +38,6 @@ export default class Main{
   }
   static Update(){
     Main.camera.Update(program);
-    //debug
-    //Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
     EntityManager.Update(program);
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     Main.timer+=1;
@@ -108,9 +92,9 @@ export default class Main{
         }
 
         const cube = new Cube(vec3(0,0,0),3000,1,program);
-        const cube2 = new Cube(vec3(0,0,-12),1.00,0,program);
+        const cube2 = new Cube(vec3(0,-12,0),1.00,0,program);
         const cube3 = new Cube(vec3(12,0,0),1.00,0,program);
-        const cube4 = new Cube(vec3(0,0,12),0.80,0,program);
+        const cube4 = new Cube(vec3(0,12,0),0.80,0,program);
         const cube5 = new Cube(vec3(-12,0,0),0.80,0,program);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);

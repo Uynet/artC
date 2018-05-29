@@ -103,6 +103,7 @@ export default class Camera{
     const loc3 = Main.gl.getUniformLocation(program.id, "projMatrix");
     Main.gl.uniformMatrix4fv(loc2,false,this.viewMatrix);
     Main.gl.uniformMatrix4fv(loc3,false,this.projMatrix);
+    Main.gl.uniform1f(Main.gl.getUniformLocation(program.id,"asp"),this.asp);
   }
   LookAt(eye,forward,up){
     const side = normalize(cross(forward,up));

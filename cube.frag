@@ -14,6 +14,7 @@ uniform vec3 forward;
 uniform vec3 up;
 uniform vec3 side;
 
+uniform float asp;
 
 uniform float holeRadius;
 
@@ -28,13 +29,12 @@ void main() {
     normal = normalize(vNorm + normalMap);
     float diff = max(0.0,dot(normal,light));//拡散光
     color = mix(vec3(diff) , texture2D(favTex, vUV).rgb , 0.7);
-    /*
-    vec3 ref = normalize(reflect(sideeye-vPos,normalize(normal)));
+
+    vec3 ref = normalize(reflect(eye-vPos,normalize(normal)));
     float theta = atan(ref.z,ref.x);
     float phi = atan(ref.y,length(ref.xz));
     vec3 refColor = texture2D(skyTex, vec2(theta/PI/2.+0.5,-phi/PI+0.5)).rgb*2.;
     color = mix(color,refColor,0.3)-0.3;
-    */
   }
   if(texnum == 1){
     uv -= 0.5;
@@ -47,10 +47,13 @@ void main() {
     float r2 = r;
     vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
     */
-    vec3 dist = normalize(forward + uv.x*side + uv.y*up);
+    vec3 dist = normalize(forward + uv.x*asp*side + uv.y*up);
+    if(dist.x == 0.0)dist.x += 0.001;
+    if(dist.y == 0.0)dist.y += 0.001;
+    if(dist.z == 0.0)dist.z += 0.001;
     float theta = atan(-dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
-    color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/(PI+0.01)+0.5)).rgb;
+    color = texture2D(skyTex, vec2(theta/PI/2.00+0.5,-phi/(PI+0.00)+0.5)).rgb;
     //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
     //ブラックホール
     /*

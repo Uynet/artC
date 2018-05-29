@@ -94,22 +94,8 @@ window.ondeviceorientation = function(event) {
   Main.camera.beta = event.beta * 2*Math.PI/360;//x
   Main.camera.gamma = event.gamma * 2*Math.PI/360;//y
 };
-window.ondevicemotion = function(event) {
-  Main.camera.acc.x = event.acceleration.x/50;
-  Main.camera.acc.y = event.acceleration.y/50;
-  Main.camera.acc.z = -event.acceleration.z/50;
-  if(event.acceleration.x < 0.1) Main.camera.acc.x = 0;
-  if(event.acceleration.y < 0.1) Main.camera.acc.y = 0;
-  if(event.acceleration.z < 0.1) Main.camera.acc.z = 0;
-};
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
-  if (this.webkitRequestFullScreen) {
-    this.webkitRequestFullScreen();
-  }
-  else if (this. mozRequestFullScreen) {
-    this.mozRequestFullScreen();
-  }
   cl(touch.pageX);
 }
 window.ontouchmove = e=>{
@@ -132,8 +118,6 @@ class Main{
   }
   static Update(){
     Main.camera.Update(program);
-    //debug
-    //Main.param.innerHTML = `${Main.camera.alpha}</br>${Main.camera.beta}<br>${Main.camera.gamma}<br><br>${Main.camera.acc.x}</br>${Main.camera.acc.y}<br>${Main.camera.acc.z}`;
     __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Update(program);
     //Main.holeRadius += 0.002*Math.sin(Main.timer/120);
     Main.timer+=1;
@@ -188,9 +172,9 @@ class Main{
         }
 
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,1,program);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,-12),1.00,0,program);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-12,0),1.00,0,program);
         const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),1.00,0,program);
-        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,12),0.80,0,program);
+        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,12,0),0.80,0,program);
         const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),0.80,0,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
@@ -337,6 +321,7 @@ class Cube{
     this.polygonID = polygonID;
     polygonID += 6;
     this.seed = rand3d(15);
+    this.program = program;
 
     this.position = [
       //1
@@ -444,7 +429,7 @@ class Cube{
     this.texuvBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.texuv);
 
   }
-  Update(program){
+  Update(){
     //拍動
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
     let s = this.Size(timer);
@@ -454,7 +439,7 @@ class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"beat");
+    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
     //回転
     let yy = timer/(this.seed.y+50);
@@ -481,22 +466,22 @@ class Cube{
     this.rotMatrix = multMatrix(rotY,rotZ);
     this.rotMatrix = multMatrix(this.rotMatrix,rotX);
   }
-  Bind(program){
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(program.id,"uv",2,this.texuvBuffer.id);
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(program.id,"position",3,this.positionBuffer.id);
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(program.id,"normal",3,this.normalBuffer.id);
+  Bind(){
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"position",3,this.positionBuffer.id);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"normal",3,this.normalBuffer.id);
   }
-  Draw(program){
-    this.Bind(program);
+  Draw(){
+    this.Bind();
     //座標変換
     let center = [this.pos.x,this.pos.y,this.pos.z];
-    const loc0 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "center");
+    const loc0 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id, "center");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform3fv(loc0,center);
 
-    const loc2 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "rotMatrix");
+    const loc2 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id, "rotMatrix");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"texnum"),this.textureID);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"texnum"),this.textureID);
     for(let i=0;i<6;i++){
       __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.drawArrays(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.TRIANGLE_STRIP,4*i,4);
     }
@@ -734,6 +719,7 @@ class Camera{
     const loc3 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id, "projMatrix");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.viewMatrix);
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc3,false,this.projMatrix);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1f(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(program.id,"asp"),this.asp);
   }
   LookAt(eye,forward,up){
     const side = normalize(cross(forward,up));

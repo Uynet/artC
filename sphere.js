@@ -1,4 +1,4 @@
-export default class sphere{
+export default class Sphere{
   constructor(){
   }
   Update(){

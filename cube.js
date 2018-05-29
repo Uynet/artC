@@ -11,6 +11,7 @@ export default class Cube{
     this.polygonID = polygonID;
     polygonID += 6;
     this.seed = rand3d(15);
+    this.program = program;
 
     this.position = [
       //1
@@ -118,7 +119,7 @@ export default class Cube{
     this.texuvBuffer = new VertexBuffer(this.texuv);
 
   }
-  Update(program){
+  Update(){
     //拍動
     let timer = Main.timer;
     let s = this.Size(timer);
@@ -128,7 +129,7 @@ export default class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    const loc1 = Main.gl.getUniformLocation(program.id,"beat");
+    const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
     Main.gl.uniformMatrix4fv(loc1,false,this.beat);
     //回転
     let yy = timer/(this.seed.y+50);
@@ -155,22 +156,22 @@ export default class Cube{
     this.rotMatrix = multMatrix(rotY,rotZ);
     this.rotMatrix = multMatrix(this.rotMatrix,rotX);
   }
-  Bind(program){
-    Main.SetAttribute(program.id,"uv",2,this.texuvBuffer.id);
-    Main.SetAttribute(program.id,"position",3,this.positionBuffer.id);
-    Main.SetAttribute(program.id,"normal",3,this.normalBuffer.id);
+  Bind(){
+    Main.SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
+    Main.SetAttribute(this.program.id,"position",3,this.positionBuffer.id);
+    Main.SetAttribute(this.program.id,"normal",3,this.normalBuffer.id);
   }
-  Draw(program){
-    this.Bind(program);
+  Draw(){
+    this.Bind();
     //座標変換
     let center = [this.pos.x,this.pos.y,this.pos.z];
-    const loc0 = Main.gl.getUniformLocation(program.id, "center");
+    const loc0 = Main.gl.getUniformLocation(this.program.id, "center");
     Main.gl.uniform3fv(loc0,center);
 
-    const loc2 = Main.gl.getUniformLocation(program.id, "rotMatrix");
+    const loc2 = Main.gl.getUniformLocation(this.program.id, "rotMatrix");
     Main.gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
-    Main.gl.uniform1i(Main.gl.getUniformLocation(program.id,"texnum"),this.textureID);
+    Main.gl.uniform1i(Main.gl.getUniformLocation(this.program.id,"texnum"),this.textureID);
     for(let i=0;i<6;i++){
       Main.gl.drawArrays(Main.gl.TRIANGLE_STRIP,4*i,4);
     }
