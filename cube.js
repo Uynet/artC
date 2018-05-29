@@ -119,19 +119,9 @@ export default class Cube{
     this.texuvBuffer = new VertexBuffer(this.texuv);
 
   }
-  Update(){
-    //拍動
-    let timer = Main.timer;
-    let s = this.Size(timer);
-    this.beat = [
-      s,0,0,0,
-      0,s,0,0,
-      0,0,s,0,
-      0,0,0,1,
-    ];
-    const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
-    Main.gl.uniformMatrix4fv(loc1,false,this.beat);
+  Rot(){
     //回転
+    let timer = Main.timer;
     let yy = timer/(this.seed.y+50);
     let rotY = [
       cos(yy),0,-sin(yy),0,
@@ -146,15 +136,24 @@ export default class Cube{
       0,0,1,0,
       0,0,0,1,
     ];
-    let xx = timer/(this.seed.x+50);
-    let rotX = [
-      1,0,0,0,
-      0,cos(xx),-sin(xx),0,
-      0,sin(xx),cos(xx),0,
+    let rotX = rotX4(timer/(this.seed.x+50));
+    this.rotMatrix = multMatrix(multMatrix(rotY,rotZ),rotX);
+  }
+  Beat(){
+    let timer = Main.timer;
+    let s = this.Size(timer);
+    this.beat = [
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
       0,0,0,1,
     ];
-    this.rotMatrix = multMatrix(rotY,rotZ);
-    this.rotMatrix = multMatrix(this.rotMatrix,rotX);
+    const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
+    Main.gl.uniformMatrix4fv(loc1,false,this.beat);
+  }
+  Update(){
+    this.Beat();
+    this.Rot();
   }
   Bind(){
     Main.SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);

@@ -70,13 +70,13 @@
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__GLObject_vertexBuffer_js__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_indexBuffer_js__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_program_js__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cube_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GLObject_shader_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__entityManager_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__input_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_indexBuffer_js__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_program_js__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__cube_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GLObject_shader_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__entityManager_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__input_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__camera_js__ = __webpack_require__(10);
 
 
@@ -96,7 +96,7 @@ window.ondeviceorientation = function(event) {
 };
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
-  cl(touch.pageX);
+  Main.camera.RayCast(touch.pageX,touch.pageY);
 }
 window.ontouchmove = e=>{
   e.preventDefault;
@@ -172,10 +172,10 @@ class Main{
         }
 
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),3000,1,program);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-12,0),1.00,0,program);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),1.00,0,program);
-        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,12,0),0.80,0,program);
-        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),0.80,0,program);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-12,0),2.00,0,program);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),2.00,0,program);
+        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,12,0),2.00,0,program);
+        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),2.00,0,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
@@ -231,6 +231,29 @@ class VertexBuffer{
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+class EntityManager{
+  static Init(){
+    this.list = [];
+  }
+  static Add(e){
+    this.list.push(e);
+  }
+  static Update(program){
+    this.list.forEach(e=>e.Update(program));
+  }
+  static Draw(program){
+    this.list.forEach(e=>e.Draw(program));
+  }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = EntityManager;
+
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 class Input{
   static Init(){
     Input.keyList = new Array(256).fill(false);
@@ -254,7 +277,7 @@ document.onkeyup = e=>{
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -279,7 +302,7 @@ class IndexBuffer{
 
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -301,12 +324,12 @@ class Program{
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_glObject_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_glObject_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__ = __webpack_require__(1);
 
 
@@ -429,19 +452,9 @@ class Cube{
     this.texuvBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.texuv);
 
   }
-  Update(){
-    //拍動
-    let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
-    let s = this.Size(timer);
-    this.beat = [
-      s,0,0,0,
-      0,s,0,0,
-      0,0,s,0,
-      0,0,0,1,
-    ];
-    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
+  Rot(){
     //回転
+    let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
     let yy = timer/(this.seed.y+50);
     let rotY = [
       cos(yy),0,-sin(yy),0,
@@ -456,15 +469,24 @@ class Cube{
       0,0,1,0,
       0,0,0,1,
     ];
-    let xx = timer/(this.seed.x+50);
-    let rotX = [
-      1,0,0,0,
-      0,cos(xx),-sin(xx),0,
-      0,sin(xx),cos(xx),0,
+    let rotX = rotX4(timer/(this.seed.x+50));
+    this.rotMatrix = multMatrix(multMatrix(rotY,rotZ),rotX);
+  }
+  Beat(){
+    let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
+    let s = this.Size(timer);
+    this.beat = [
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
       0,0,0,1,
     ];
-    this.rotMatrix = multMatrix(rotY,rotZ);
-    this.rotMatrix = multMatrix(this.rotMatrix,rotX);
+    const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
+  }
+  Update(){
+    this.Beat();
+    this.Rot();
   }
   Bind(){
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
@@ -498,7 +520,7 @@ class Cube{
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -516,7 +538,7 @@ class GLObject{
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -556,7 +578,7 @@ class Shader{
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -585,35 +607,14 @@ class Texture{
 
 
 /***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class EntityManager{
-  static Init(){
-    this.list = [];
-  }
-  static Add(e){
-    this.list.push(e);
-  }
-  static Update(program){
-    this.list.forEach(e=>e.Update(program));
-  }
-  static Draw(program){
-    this.list.forEach(e=>e.Draw(program));
-  }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = EntityManager;
-
-
-
-/***/ }),
 /* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_js__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__entityManager_js__ = __webpack_require__(2);
+
 
 
 
@@ -730,6 +731,18 @@ class Camera{
       side.z, up.z, forward.z, 0,
       -dot(eye, side), -dot(eye, up), -dot(eye, forward), 1
     ];
+  }
+  RayCast(x,y){
+    const u = x/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.width -0.5;
+    const v = -(y/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.height -0.5);
+    this.side = cross(this.up,this.forward);
+    let side = mlv(u,this.side);
+    let up = mlv(v,this.up);
+    let ray = normalize(adv(adv(this.forward,side),up));
+    
+    __WEBPACK_IMPORTED_MODULE_2__entityManager_js__["a" /* default */].list.forEach(e=>{
+      if(dot(normalize(e.pos),ray)>0.97)cl("a");
+    });
   }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Camera;

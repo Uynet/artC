@@ -37,20 +37,21 @@ const mlv = (a,v)=>{
   return {
     x : a*v.x,
     y : a*v.y,
+    z : a*v.z,
   }
 }
 const dist = (p1,p2)=>{
   return Math.sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y));
 }
 const lenqth =(v)=>{
-  return Math.sqrt(v.x*v.x + v.y*v.y);
+  return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 const lenqth2 = (v)=>{
-  return v.x*v.x + v.y*v.y;
+  return v.x*v.x + v.y*v.y + v.z*v.z;
 }
 //正規化
 const normalize = (v)=>{
-  let d = v.x*v.x + v.y*v.y + v.z*v.z;
+  let d = Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
   return {
     x : v.x/d,
     y : v.y/d,
@@ -114,3 +115,12 @@ const rand3d = (d)=>{
 }
 const cos = Math.cos;
 const sin = Math.sin;
+
+const rotX4 = (a)=>{
+  return [
+    1,0,0,0,
+    0,cos(a),-sin(a),0,
+    0,sin(a),cos(a),0,
+    0,0,0,1,
+  ]
+}

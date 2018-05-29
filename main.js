@@ -16,7 +16,7 @@ window.ondeviceorientation = function(event) {
 };
 window.ontouchstart = function(e){
   let touch = e.changedTouches[0];
-  cl(touch.pageX);
+  Main.camera.RayCast(touch.pageX,touch.pageY);
 }
 window.ontouchmove = e=>{
   e.preventDefault;
@@ -92,10 +92,10 @@ export default class Main{
         }
 
         const cube = new Cube(vec3(0,0,0),3000,1,program);
-        const cube2 = new Cube(vec3(0,-12,0),1.00,0,program);
-        const cube3 = new Cube(vec3(12,0,0),1.00,0,program);
-        const cube4 = new Cube(vec3(0,12,0),0.80,0,program);
-        const cube5 = new Cube(vec3(-12,0,0),0.80,0,program);
+        const cube2 = new Cube(vec3(0,-12,0),2.00,0,program);
+        const cube3 = new Cube(vec3(12,0,0),2.00,0,program);
+        const cube4 = new Cube(vec3(0,12,0),2.00,0,program);
+        const cube5 = new Cube(vec3(-12,0,0),2.00,0,program);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
         EntityManager.Add(cube3);

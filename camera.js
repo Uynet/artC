@@ -1,5 +1,6 @@
 import Main from "./main.js";
 import Input from "./input.js";
+import EntityManager from "./entityManager.js";
 
 export default class Camera{
   constructor(){
@@ -114,5 +115,17 @@ export default class Camera{
       side.z, up.z, forward.z, 0,
       -dot(eye, side), -dot(eye, up), -dot(eye, forward), 1
     ];
+  }
+  RayCast(x,y){
+    const u = x/Main.canvas.width -0.5;
+    const v = -(y/Main.canvas.height -0.5);
+    this.side = cross(this.up,this.forward);
+    let side = mlv(u,this.side);
+    let up = mlv(v,this.up);
+    let ray = normalize(adv(adv(this.forward,side),up));
+    
+    EntityManager.list.forEach(e=>{
+      if(dot(normalize(e.pos),ray)>0.97)cl("a");
+    });
   }
 }
