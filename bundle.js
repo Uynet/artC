@@ -546,6 +546,7 @@ class Cube{
       case State.open :
         break;
       case State.shrinking :
+        this.Rot();
         this.Shrink();
         break;
       default : cl("po");
@@ -587,8 +588,8 @@ class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    this.size = (this.size-1.5)*0.9;
-    if(this.size <= 1.5){
+    this.size = (this.size-1.5)*0.9 + 1.5;
+    if(this.size <= 1.501){
       this.size = 1.5;
       s = this.size;
       this.grow =[
@@ -793,11 +794,13 @@ class Camera{
       ]
 
     let rotCamera = multMatrix3(multMatrix3(rotAlpha,rotBeta),rotGamma);
+    /*
     rotCamera = multMatrix3(rotCamera,[
       1,0,0,
       0,0,1,
       0,-1,0,
     ]);
+    */
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);

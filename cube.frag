@@ -40,7 +40,7 @@ void main() {
   vec3 normal = vNorm;
   vec3 color;
   float PI = 3.14159265;
-  if(state == 0||state == 1 || state == 3) {
+  if(state == 0||state == 1) {
     vec3 normalMap = texture2D(favTexNorm,vUV).rgb;//法線マップのデータ
     normal = normalize(vNorm + normalMap);
     float diff = max(0.0,dot(normal,light));//拡散光
@@ -52,7 +52,7 @@ void main() {
     vec3 refColor = TextureColor(openTexnum,vec2(theta/PI/2.+0.5,-phi/PI+0.5));
     color = mix(color,refColor,0.3)-0.3;
   }
-  if( state == 2){
+  if( state == 2 || state == 3){
     uv -= 0.5;
     //極座標変換する
     /*
