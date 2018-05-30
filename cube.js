@@ -1,6 +1,7 @@
 import Main from "./main.js";
 import GLObject from "./GLObject/glObject.js";
 import VertexBuffer from "./GLObject/vertexBuffer.js";
+import EntityManager from "./entityManager.js";
 
 let polygonID = 0;
 
@@ -8,11 +9,12 @@ const State = {
   usual : "usual",
   growing : "growing",
   open : "open",
+  shrinking : "shrinking",
 }
 
 
 export default class Cube{
-  constructor(pos,e,textureID,program){
+  constructor(pos,size,textureID,program){
     this.pos = pos;
     this.textureID = textureID;
     this.polygonID = polygonID;
@@ -20,8 +22,11 @@ export default class Cube{
     this.seed = rand3d(15);
     this.program = program;
     this.state = State.usual;
-    if(textureID == 1)this.state = State.open;
-    this.size = 1;
+    if(textureID == 1){
+      this.state = State.open;
+      EntityManager.openCube = this;
+    }
+    this.size = size;
 
     let E4 = [
       1,0,0,0,
@@ -29,47 +34,50 @@ export default class Cube{
       0,0,1,0,
       0,0,0,1,
     ]
-    this.grow = E4;
+    this.grow = [
+      this.size,0,0,0,
+      0,this.size,0,0,
+      0,0,this.size,0,
+      0,0,0,1,
+    ]
     this.beat = E4;
     this.rotMatrix = E4;
+
 
     this.position = [
       //1
       0,0,0,//0
-      e,0,0,//1
-      0,e,0,//2
-      e,e,0,//3
+      1,0,0,//1
+      0,1,0,//2
+      1,1,0,//3
       //2
-      0,0,e,
-      e,0,e,
-      0,e,e,
-      e,e,e,
+      0,0,1,
+      1,0,1,
+      0,1,1,
+      1,1,1,
       //3
       0,0,0,
-      e,0,0,
-      0,0,e,
-      e,0,e,
+      1,0,0,
+      0,0,1,
+      1,0,1,
       //4
-      0,e,0,
-      e,e,0,
-      0,e,e,
-      e,e,e,
+      0,1,0,
+      1,1,0,
+      0,1,1,
+      1,1,1,
       //5
       0,0,0,
-      0,e,0,
-      0,0,e,
-      0,e,e,
+      0,1,0,
+      0,0,1,
+      0,1,1,
       //6
-      e,0,0,
-      e,e,0,
-      e,0,e,
-      e,e,e,
+      1,0,0,
+      1,1,0,
+      1,0,1,
+      1,1,1,
     ];
     this.position.forEach((p,i,a)=>{
-      a[i]-=e/2;
-      if(i%3==0)a[i]+=pos.x;
-      if(i%3==1)a[i]+=pos.y;
-      if(i%3==2)a[i]+=pos.z;
+      a[i]-=1/2;
     });
     this.positionBuffer = new VertexBuffer(this.position);
     this.normal = [
@@ -164,7 +172,6 @@ export default class Cube{
     ];
   }
   Rot(){
-    //回転
     let timer = Main.timer;
     let rotX = this.rotX4(timer/(this.seed.x+50));
     let rotY = this.rotY4(timer/(this.seed.y+50));
@@ -182,10 +189,13 @@ export default class Cube{
     ];
   }
   Tap(){
-    cl(this.state);
     switch(this.state){
-      case "usual" : this.state = "growing"; break;
-      case "growing" : this.state = "growing"; break;
+      case "usual" : 
+        this.state = "growing";
+        EntityManager.openCube.pos = mlv(-12,Main.camera.forward);
+        EntityManager.growingCube = this;
+        EntityManager.openCube.state = "shrinking";
+        break;
     }
   }
   Update(){
@@ -199,13 +209,13 @@ export default class Cube{
         break;
       case State.open :
         break;
-      case State.shrink :
+      case State.shrinking :
+        this.Shrink();
         break;
       default : cl("po");
     }
   }
-  Bind(){
-    Main.SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
+  Bind(){ Main.SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
     Main.SetAttribute(this.program.id,"position",3,this.positionBuffer.id);
     Main.SetAttribute(this.program.id,"normal",3,this.normalBuffer.id);
   }
@@ -217,10 +227,42 @@ export default class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    this.size *= 1.21;
-    if(this.size >= 30){
+    this.size *= 0.60;
+    if(this.size <= 0.01){
       this.size = 30;
+      this.pos = vec3(0,0,0);
+      s = this.size;
+      this.grow =[
+        s,0,0,0,
+        0,s,0,0,
+        0,0,s,0,
+        0,0,0,1,
+      ];
       this.state = "open";
+      EntityManager.growingCube = null;
+      EntityManager.openCube = this;
+    }
+  }
+  Shrink(){
+    let s = this.size;
+    cl(s)
+    this.grow =[
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
+      0,0,0,1,
+    ];
+    this.size = (this.size-1.5)*0.9;
+    if(this.size <= 1.5){
+      this.size = 1.5;
+      s = this.size;
+      this.grow =[
+        s,0,0,0,
+        0,s,0,0,
+        0,0,s,0,
+        0,0,0,1,
+      ];
+      this.state = "usual";
     }
   }
   Draw(){
@@ -237,7 +279,7 @@ export default class Cube{
     //拍動
     const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
     Main.gl.uniformMatrix4fv(loc1,false,this.beat);
-    const loc3 = Main.gl.getUniformLocation(this.program.id,"grow");
+    const loc3 = Main.gl.getUniformLocation(this.program.id,"size");
     Main.gl.uniformMatrix4fv(loc3,false,this.grow);
     for(let i=0;i<6;i++){
       Main.gl.drawArrays(Main.gl.TRIANGLE_STRIP,4*i,4);

@@ -115,12 +115,3 @@ const rand3d = (d)=>{
 }
 const cos = Math.cos;
 const sin = Math.sin;
-
-const E4 = ()=>{
-  return [
-    1,0,0,0,
-    0,1,0,0,
-    0,0,1,0,
-    0,0,0,1,
-  ]
-}

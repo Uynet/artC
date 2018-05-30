@@ -172,10 +172,10 @@ class Main{
         }
 
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,1,program);
-        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-12,0),2.00,2,program);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(12,0,0),2.00,0,program);
-        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,12,0),2.00,0,program);
-        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-12,0,0),2.00,0,program);
+        const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-14,0),1.5,2,program);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(14,0,0),1.5,0,program);
+        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,14,0),1.5,0,program);
+        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-14,0,0),1.5,0,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
@@ -234,6 +234,8 @@ class VertexBuffer{
 class EntityManager{
   static Init(){
     this.list = [];
+    this.openCube;
+    this.growingCube;
   }
   static Add(e){
     this.list.push(e);
@@ -331,6 +333,8 @@ class Program{
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__main_js__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GLObject_glObject_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__entityManager_js__ = __webpack_require__(2);
+
 
 
 
@@ -341,11 +345,12 @@ const State = {
   usual : "usual",
   growing : "growing",
   open : "open",
+  shrinking : "shrinking",
 }
 
 
 class Cube{
-  constructor(pos,e,textureID,program){
+  constructor(pos,size,textureID,program){
     this.pos = pos;
     this.textureID = textureID;
     this.polygonID = polygonID;
@@ -353,8 +358,11 @@ class Cube{
     this.seed = rand3d(15);
     this.program = program;
     this.state = State.usual;
-    if(textureID == 1)this.state = State.open;
-    this.size = 1;
+    if(textureID == 1){
+      this.state = State.open;
+      __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube = this;
+    }
+    this.size = size;
 
     let E4 = [
       1,0,0,0,
@@ -362,47 +370,50 @@ class Cube{
       0,0,1,0,
       0,0,0,1,
     ]
-    this.grow = E4;
+    this.grow = [
+      this.size,0,0,0,
+      0,this.size,0,0,
+      0,0,this.size,0,
+      0,0,0,1,
+    ]
     this.beat = E4;
     this.rotMatrix = E4;
+
 
     this.position = [
       //1
       0,0,0,//0
-      e,0,0,//1
-      0,e,0,//2
-      e,e,0,//3
+      1,0,0,//1
+      0,1,0,//2
+      1,1,0,//3
       //2
-      0,0,e,
-      e,0,e,
-      0,e,e,
-      e,e,e,
+      0,0,1,
+      1,0,1,
+      0,1,1,
+      1,1,1,
       //3
       0,0,0,
-      e,0,0,
-      0,0,e,
-      e,0,e,
+      1,0,0,
+      0,0,1,
+      1,0,1,
       //4
-      0,e,0,
-      e,e,0,
-      0,e,e,
-      e,e,e,
+      0,1,0,
+      1,1,0,
+      0,1,1,
+      1,1,1,
       //5
       0,0,0,
-      0,e,0,
-      0,0,e,
-      0,e,e,
+      0,1,0,
+      0,0,1,
+      0,1,1,
       //6
-      e,0,0,
-      e,e,0,
-      e,0,e,
-      e,e,e,
+      1,0,0,
+      1,1,0,
+      1,0,1,
+      1,1,1,
     ];
     this.position.forEach((p,i,a)=>{
-      a[i]-=e/2;
-      if(i%3==0)a[i]+=pos.x;
-      if(i%3==1)a[i]+=pos.y;
-      if(i%3==2)a[i]+=pos.z;
+      a[i]-=1/2;
     });
     this.positionBuffer = new __WEBPACK_IMPORTED_MODULE_2__GLObject_vertexBuffer_js__["a" /* default */](this.position);
     this.normal = [
@@ -497,7 +508,6 @@ class Cube{
     ];
   }
   Rot(){
-    //回転
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
     let rotX = this.rotX4(timer/(this.seed.x+50));
     let rotY = this.rotY4(timer/(this.seed.y+50));
@@ -515,10 +525,13 @@ class Cube{
     ];
   }
   Tap(){
-    cl(this.state);
     switch(this.state){
-      case "usual" : this.state = "growing"; break;
-      case "growing" : this.state = "growing"; break;
+      case "usual" : 
+        this.state = "growing";
+        __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube.pos = mlv(-12,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.forward);
+        __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].growingCube = this;
+        __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube.state = "shrinking";
+        break;
     }
   }
   Update(){
@@ -532,13 +545,13 @@ class Cube{
         break;
       case State.open :
         break;
-      case State.shrink :
+      case State.shrinking :
+        this.Shrink();
         break;
       default : cl("po");
     }
   }
-  Bind(){
-    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
+  Bind(){ __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"uv",2,this.texuvBuffer.id);
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"position",3,this.positionBuffer.id);
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].SetAttribute(this.program.id,"normal",3,this.normalBuffer.id);
   }
@@ -550,10 +563,42 @@ class Cube{
       0,0,s,0,
       0,0,0,1,
     ];
-    this.size *= 1.21;
-    if(this.size >= 30){
+    this.size *= 0.60;
+    if(this.size <= 0.01){
       this.size = 30;
+      this.pos = vec3(0,0,0);
+      s = this.size;
+      this.grow =[
+        s,0,0,0,
+        0,s,0,0,
+        0,0,s,0,
+        0,0,0,1,
+      ];
       this.state = "open";
+      __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].growingCube = null;
+      __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube = this;
+    }
+  }
+  Shrink(){
+    let s = this.size;
+    cl(s)
+    this.grow =[
+      s,0,0,0,
+      0,s,0,0,
+      0,0,s,0,
+      0,0,0,1,
+    ];
+    this.size = (this.size-1.5)*0.9;
+    if(this.size <= 1.5){
+      this.size = 1.5;
+      s = this.size;
+      this.grow =[
+        s,0,0,0,
+        0,s,0,0,
+        0,0,s,0,
+        0,0,0,1,
+      ];
+      this.state = "usual";
     }
   }
   Draw(){
@@ -570,7 +615,7 @@ class Cube{
     //拍動
     const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
-    const loc3 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"grow");
+    const loc3 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"size");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc3,false,this.grow);
     for(let i=0;i<6;i++){
       __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.drawArrays(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.TRIANGLE_STRIP,4*i,4);
@@ -775,7 +820,7 @@ class Camera{
     this.viewMatrix = this.LookAt(this.pos,this.forward,this.up);
     let timer = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].timer;
     const near = 0.0;
-    const far = 6;
+    const far = 6000;
     const t = 0.8;//画角
 
     this.projMatrix = [
@@ -803,7 +848,6 @@ class Camera{
   RayCast(x,y){
     const u = x/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.width -0.5;
     const v = -(y/__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].canvas.height -0.5);
-    cl(vec2(u,v));
     this.side = cross(this.up,this.forward);
     let side = mlv(u,this.side);
     let up = mlv(v,this.up);

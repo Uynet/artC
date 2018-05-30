@@ -1,6 +1,8 @@
 export default class EntityManager{
   static Init(){
     this.list = [];
+    this.openCube;
+    this.growingCube;
   }
   static Add(e){
     this.list.push(e);

@@ -91,7 +91,7 @@ export default class Camera{
     this.viewMatrix = this.LookAt(this.pos,this.forward,this.up);
     let timer = Main.timer;
     const near = 0.0;
-    const far = 6;
+    const far = 6000;
     const t = 0.8;//画角
 
     this.projMatrix = [
@@ -119,7 +119,6 @@ export default class Camera{
   RayCast(x,y){
     const u = x/Main.canvas.width -0.5;
     const v = -(y/Main.canvas.height -0.5);
-    cl(vec2(u,v));
     this.side = cross(this.up,this.forward);
     let side = mlv(u,this.side);
     let up = mlv(v,this.up);
