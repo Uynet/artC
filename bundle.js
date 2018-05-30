@@ -342,10 +342,10 @@ class Program{
 let polygonID = 0;
 
 const State = {
-  usual : "usual",
-  growing : "growing",
-  open : "open",
-  shrinking : "shrinking",
+  usual : 0,
+  growing : 1,
+  open : 2,
+  shrinking : 3,
 }
 
 
@@ -526,11 +526,11 @@ class Cube{
   }
   Tap(){
     switch(this.state){
-      case "usual" : 
-        this.state = "growing";
+      case State.usual : 
+        this.state = State.growing;
         __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube.pos = mlv(-12,__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].camera.forward);
         __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].growingCube = this;
-        __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube.state = "shrinking";
+        __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube.state = State.shrinking;
         break;
     }
   }
@@ -574,14 +574,13 @@ class Cube{
         0,0,s,0,
         0,0,0,1,
       ];
-      this.state = "open";
+      this.state = State.open;
       __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].growingCube = null;
       __WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube = this;
     }
   }
   Shrink(){
     let s = this.size;
-    cl(s)
     this.grow =[
       s,0,0,0,
       0,s,0,0,
@@ -598,7 +597,7 @@ class Cube{
         0,0,s,0,
         0,0,0,1,
       ];
-      this.state = "usual";
+      this.state = State.usual;
     }
   }
   Draw(){
@@ -612,6 +611,8 @@ class Cube{
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"texnum"),this.textureID);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"openTexnum"),__WEBPACK_IMPORTED_MODULE_3__entityManager_js__["a" /* default */].openCube.textureID);
+    __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniform1i(__WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"state"),this.state);
     //拍動
     const loc1 = __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.getUniformLocation(this.program.id,"beat");
     __WEBPACK_IMPORTED_MODULE_0__main_js__["default"].gl.uniformMatrix4fv(loc1,false,this.beat);
@@ -792,6 +793,11 @@ class Camera{
       ]
 
     let rotCamera = multMatrix3(multMatrix3(rotAlpha,rotBeta),rotGamma);
+    rotCamera = multMatrix3(rotCamera,[
+      1,0,0,
+      0,0,1,
+      0,-1,0,
+    ]);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
@@ -852,6 +858,7 @@ class Camera{
     let side = mlv(u,this.side);
     let up = mlv(v,this.up);
     let ray = normalize(adv(adv(this.forward,side),up));
+    cl(ray);
     
     __WEBPACK_IMPORTED_MODULE_2__entityManager_js__["a" /* default */].list.forEach(e=>{
       if(dot(normalize(subv(e.pos,this.pos)),ray)<-0.97)e.Tap();

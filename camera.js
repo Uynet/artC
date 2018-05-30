@@ -63,6 +63,11 @@ export default class Camera{
       ]
 
     let rotCamera = multMatrix3(multMatrix3(rotAlpha,rotBeta),rotGamma);
+    rotCamera = multMatrix3(rotCamera,[
+      1,0,0,
+      0,0,1,
+      0,-1,0,
+    ]);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
@@ -123,6 +128,7 @@ export default class Camera{
     let side = mlv(u,this.side);
     let up = mlv(v,this.up);
     let ray = normalize(adv(adv(this.forward,side),up));
+    cl(ray);
     
     EntityManager.list.forEach(e=>{
       if(dot(normalize(subv(e.pos,this.pos)),ray)<-0.97)e.Tap();

@@ -6,10 +6,10 @@ import EntityManager from "./entityManager.js";
 let polygonID = 0;
 
 const State = {
-  usual : "usual",
-  growing : "growing",
-  open : "open",
-  shrinking : "shrinking",
+  usual : 0,
+  growing : 1,
+  open : 2,
+  shrinking : 3,
 }
 
 
@@ -190,11 +190,11 @@ export default class Cube{
   }
   Tap(){
     switch(this.state){
-      case "usual" : 
-        this.state = "growing";
+      case State.usual : 
+        this.state = State.growing;
         EntityManager.openCube.pos = mlv(-12,Main.camera.forward);
         EntityManager.growingCube = this;
-        EntityManager.openCube.state = "shrinking";
+        EntityManager.openCube.state = State.shrinking;
         break;
     }
   }
@@ -238,14 +238,13 @@ export default class Cube{
         0,0,s,0,
         0,0,0,1,
       ];
-      this.state = "open";
+      this.state = State.open;
       EntityManager.growingCube = null;
       EntityManager.openCube = this;
     }
   }
   Shrink(){
     let s = this.size;
-    cl(s)
     this.grow =[
       s,0,0,0,
       0,s,0,0,
@@ -262,7 +261,7 @@ export default class Cube{
         0,0,s,0,
         0,0,0,1,
       ];
-      this.state = "usual";
+      this.state = State.usual;
     }
   }
   Draw(){
@@ -276,6 +275,8 @@ export default class Cube{
     Main.gl.uniformMatrix4fv(loc2,false,this.rotMatrix);
 
     Main.gl.uniform1i(Main.gl.getUniformLocation(this.program.id,"texnum"),this.textureID);
+    Main.gl.uniform1i(Main.gl.getUniformLocation(this.program.id,"openTexnum"),EntityManager.openCube.textureID);
+    Main.gl.uniform1i(Main.gl.getUniformLocation(this.program.id,"state"),this.state);
     //拍動
     const loc1 = Main.gl.getUniformLocation(this.program.id,"beat");
     Main.gl.uniformMatrix4fv(loc1,false,this.beat);
