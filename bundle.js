@@ -145,10 +145,13 @@ class Main{
 
       this.gl = gl;
       this.canvas = canvas;
-      const texFav = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
-      const texFavNorm = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
-      const texSkydome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
-      const texMountaindome = new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/mountain.png",3);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/fav.png",0);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/NormalMap.png",2);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/skydome.png",1);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/mountain.png",3);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/dome3.png",4);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/dome4.png",5);
+      new __WEBPACK_IMPORTED_MODULE_5__GLObject_Texture_js__["a" /* default */]("resource/dome5.png",6);
 
       this.camera = new __WEBPACK_IMPORTED_MODULE_8__camera_js__["a" /* default */]();
 
@@ -173,9 +176,9 @@ class Main{
 
         const cube = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,0,0),30,1,program);
         const cube2 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,-14,0),1.5,2,program);
-        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(14,0,0),1.5,0,program);
-        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,14,0),1.5,0,program);
-        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-14,0,0),1.5,0,program);
+        const cube3 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(14,0,0),1.5,4,program);
+        const cube4 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(0,14,0),1.5,5,program);
+        const cube5 = new __WEBPACK_IMPORTED_MODULE_3__cube_js__["a" /* default */](vec3(-14,0,0),1.5,6,program);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube2);
         __WEBPACK_IMPORTED_MODULE_6__entityManager_js__["a" /* default */].Add(cube3);
@@ -186,6 +189,9 @@ class Main{
         gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
         gl.uniform1i(gl.getUniformLocation(program.id,"favTexNorm"),2);
         gl.uniform1i(gl.getUniformLocation(program.id,"mountainTex"),3);
+        gl.uniform1i(gl.getUniformLocation(program.id,"dome3Tex"),4);
+        gl.uniform1i(gl.getUniformLocation(program.id,"dome4Tex"),5);
+        gl.uniform1i(gl.getUniformLocation(program.id,"dome5Tex"),6);
         res();
       });
     });

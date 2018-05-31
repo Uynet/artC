@@ -65,10 +65,13 @@ export default class Main{
 
       this.gl = gl;
       this.canvas = canvas;
-      const texFav = new Texture("resource/fav.png",0);
-      const texFavNorm = new Texture("resource/NormalMap.png",2);
-      const texSkydome = new Texture("resource/skydome.png",1);
-      const texMountaindome = new Texture("resource/mountain.png",3);
+      new Texture("resource/fav.png",0);
+      new Texture("resource/NormalMap.png",2);
+      new Texture("resource/skydome.png",1);
+      new Texture("resource/mountain.png",3);
+      new Texture("resource/dome3.png",4);
+      new Texture("resource/dome4.png",5);
+      new Texture("resource/dome5.png",6);
 
       this.camera = new Camera();
 
@@ -93,9 +96,9 @@ export default class Main{
 
         const cube = new Cube(vec3(0,0,0),30,1,program);
         const cube2 = new Cube(vec3(0,-14,0),1.5,2,program);
-        const cube3 = new Cube(vec3(14,0,0),1.5,0,program);
-        const cube4 = new Cube(vec3(0,14,0),1.5,0,program);
-        const cube5 = new Cube(vec3(-14,0,0),1.5,0,program);
+        const cube3 = new Cube(vec3(14,0,0),1.5,4,program);
+        const cube4 = new Cube(vec3(0,14,0),1.5,5,program);
+        const cube5 = new Cube(vec3(-14,0,0),1.5,6,program);
         EntityManager.Add(cube);
         EntityManager.Add(cube2);
         EntityManager.Add(cube3);
@@ -106,6 +109,9 @@ export default class Main{
         gl.uniform1i(gl.getUniformLocation(program.id,"skyTex"),1);
         gl.uniform1i(gl.getUniformLocation(program.id,"favTexNorm"),2);
         gl.uniform1i(gl.getUniformLocation(program.id,"mountainTex"),3);
+        gl.uniform1i(gl.getUniformLocation(program.id,"dome3Tex"),4);
+        gl.uniform1i(gl.getUniformLocation(program.id,"dome4Tex"),5);
+        gl.uniform1i(gl.getUniformLocation(program.id,"dome5Tex"),6);
         res();
       });
     });

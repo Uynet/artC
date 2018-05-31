@@ -1,10 +1,15 @@
 precision mediump float;
 varying vec4 vColor;
 varying vec2 vUV;
+
 uniform sampler2D favTex;
 uniform sampler2D favTexNorm;
 uniform sampler2D mountainTex;
 uniform sampler2D skyTex;
+uniform sampler2D dome3Tex;
+uniform sampler2D dome4Tex;
+uniform sampler2D dome5Tex;
+
 varying vec3 vNorm;
 varying vec3 vPos;
 varying float z;
@@ -33,6 +38,9 @@ vec3 TextureColor(int tex,vec2 pos){
   if(tex == 0)return texture2D(favTex,pos).rgb;
   if(tex == 1)return texture2D(skyTex,pos).rgb;
   if(tex == 2)return texture2D(mountainTex,pos).rgb;
+  if(tex == 3)return texture2D(dome3Tex,pos).rgb;
+  if(tex == 4)return texture2D(dome4Tex,pos).rgb;
+  if(tex == 5)return texture2D(dome5Tex,pos).rgb;
 }
 void main() {
   vec2 uv = gl_FragCoord.xy/800.0;
