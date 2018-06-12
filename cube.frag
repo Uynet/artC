@@ -62,28 +62,10 @@ void main() {
   }
   if( state == 2 || state == 3){
     uv -= 0.5;
-    //極座標変換する
-    /*
-    float r = length(uv);
-    float t = atan(uv.y,uv.x);
-    float b = holeRadius;
-    float r3 = r-b;//半径
-    float r2 = r;
-    vec2 uv2 = vec2(r2*cos(t),r2*sin(t));
-    */
     vec3 dist = normalize(forward + uv.x*asp*side + uv.y*up);
     float theta = atan(-dist.z,dist.x);
     float phi = atan(dist.y,length(dist.xz));
     color = TextureColor(texnum,vec2(theta/PI/2.00+0.5,-phi/(PI+0.00)+0.5));
-    //color = texture2D(skyTex, vec2(-phi/PI+0.5,theta/PI/2.0+0.5)).rgb;
-    //ブラックホール
-    /*
-    dist = rotCamera*normalize(vec3(uv,-1.0));
-    theta = atan(dist.z,dist.x);
-    phi = atan(dist.y,length(dist.xz));
-    if(length(uv2)<holeRadius)color = texture2D(skyTex, vec2(theta/PI/2.01+0.5,-phi/PI+0.5)).rgb;
-    if(length(uv2)<holeRadius*0.8)color = texture2D(mountainTex, vec2(3.0*theta/PI/2.01+0.5,3.0*phi/PI+0.5)).rgb;
-    */
   }
   gl_FragColor = vec4(color,1.);
 }
