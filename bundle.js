@@ -800,13 +800,12 @@ class Camera{
       ]
 
     let rotCamera = multMatrix3(multMatrix3(rotAlpha,rotBeta),rotGamma);
-    /*
-    rotCamera = multMatrix3(rotCamera,[
+    b = -Math.PI/2;
+    rotCamera = multMatrix3([
       1,0,0,
-      0,0,1,
-      0,-1,0,
-    ]);
-    */
+      0,cos(b),-sin(b),
+      0,sin(b),cos(b),
+    ],rotCamera);
     //ここは転置しない
     let forward = multMatrixVec3(rotCamera,[0,0,-1]);
     let up = multMatrixVec3(rotCamera,[0,1,0]);
